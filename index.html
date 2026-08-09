@@ -442,10 +442,16 @@ function cancelReply() {
 
 function handleGoogleSignIn() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithRedirect(provider).catch((error) => {
+    firebase.auth().signInWithPopup(provider).then((result) => {
+        const user = result.user;
+        currentUserDisplayName = user.displayName || user.email.split('@')[0];
+        updateAuthUI(currentUserDisplayName);
+        alert("Successfully signed in as " + currentUserDisplayName);
+    }).catch((error) => {
         alert("Sign-in failed: " + error.message);
     });
 }
+
 
 function updateAuthUI(name) {
     if (name) {
