@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WestPulse</title>
     
+    <!-- Google Fonts: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+
     <!-- Firebase Web SDK (v9 Compatibility) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -15,9 +20,10 @@
             --bg-card: rgba(10, 10, 10, 0.85);
             --bg-elevated: rgba(22, 22, 22, 0.9);
             --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
+            --text-secondary: #71767b;
             --accent-gold: #f3c614;
-            --border-color: rgba(255, 255, 255, 0.1);
+            --site-theme-color: #f3c614;
+            --border-color: #2f3336;
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
@@ -36,7 +42,34 @@
             padding-bottom: 80px; 
         }
 
-        .container { max-width: 480px; width: 100%; margin: 0 auto; padding: 0 16px; }
+        .container { max-width: 560px; width: 100%; margin: 0 auto; padding: 0 16px; }
+
+        /* Keyed Side-by-Side Logo Emblem */
+        .brand-logo { 
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800; 
+            font-size: 20px; 
+            color: #fff; 
+            text-decoration: none; 
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: baseline; 
+            letter-spacing: -0.8px; 
+        }
+
+        .brand-w {
+            font-family: 'Academy Engraved LET', 'Times New Roman', Times, serif;
+            font-weight: 700;
+            display: inline-block;
+            color: #ffffff;
+            font-size: 1.25em; 
+            transform: translateY(1.5px); 
+            margin-right: -1px; 
+            letter-spacing: 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9), 0 0 10px rgba(255, 255, 255, 0.4);
+        }
+
+        .brand-logo span:not(.brand-w) { color: var(--accent-gold); }
 
         /* Top Navigation */
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 16px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; backdrop-filter: blur(10px); }
@@ -44,31 +77,116 @@
         .hamburger-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 4px; }
         .hamburger-btn span { display: block; width: 22px; height: 2px; background: var(--text-primary); border-radius: 2px; }
         
-        .brand-logo { font-weight: 800; font-size: 20px; letter-spacing: -0.5px; color: #fff; text-decoration: none; cursor: pointer; }
-        .brand-logo span { color: var(--accent-gold); }
-        
         .nav-right-actions { display: flex; align-items: center; gap: 8px; }
         .notification-bell-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; position: relative; }
         .notification-badge { position: absolute; top: -4px; right: -4px; background: red; color: white; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 10px; display: none; }
         .btn-signin { background: var(--accent-gold); color: #000; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; }
+
+        /* Bottom Tab Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 200;
+        }
+        .bottom-nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .bottom-nav-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+        .bottom-nav-btn.active {
+            color: var(--accent-gold);
+        }
 
         /* Search & Filter Toolbar */
         .search-toolbar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
         .search-input { flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 8px; color: #fff; font-size: 13px; outline: none; backdrop-filter: blur(10px); }
         .search-btn { background: var(--accent-gold); color: #000; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
 
-        /* Welcome Banner */
-        .welcome-banner { background: linear-gradient(135deg, rgba(22, 22, 22, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-left: 3px solid var(--accent-gold); padding: 16px; border-radius: 8px; margin-bottom: 20px; }
-        .welcome-title { font-size: 13px; font-weight: 800; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
-        .welcome-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+        /* Search Tab Specific Layout */
+        .search-tab-container { margin-bottom: 20px; }
+        .search-tab-actions {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            margin-top: 12px;
+            scrollbar-width: none;
+            padding-bottom: 4px;
+        }
+        .search-tab-actions::-webkit-scrollbar { display: none; }
+        .search-filter-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+        }
+        .search-filter-btn.active {
+            background: var(--accent-gold);
+            color: #000;
+            border-color: var(--accent-gold);
+        }
+
+        /* Premium Welcome Banner */
+        .welcome-banner { 
+            background: linear-gradient(135deg, rgba(18, 18, 18, 0.95) 0%, rgba(5, 5, 5, 0.95) 100%); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(243, 198, 20, 0.25); 
+            border-left: 4px solid var(--accent-gold); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+        .welcome-kicker { font-size: 10px; font-weight: 800; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
+        .welcome-title { font-size: 18px; font-weight: 800; color: #ffffff; margin-bottom: 8px; letter-spacing: -0.3px; }
+        .welcome-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+        .welcome-highlight { color: #ffffff; font-weight: 600; }
 
         /* Sliding Sidebar */
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 300; backdrop-filter: blur(5px); }
         .sidebar { position: fixed; top: 0; left: -320px; width: 320px; height: 100%; background: #0a0a0a; z-index: 301; transition: left 0.3s ease; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; overflow-y: auto; }
         .sidebar.open { left: 0; }
         .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #000; }
-        .sidebar-brand { font-size: 20px; font-weight: 800; color: #fff; }
-        .sidebar-brand span { color: var(--accent-gold); }
+        
+        .sidebar-brand { 
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px; 
+            font-weight: 800; 
+            color: #fff; 
+            display: inline-flex; 
+            align-items: baseline; 
+            letter-spacing: -0.8px;
+        }
+        .sidebar-brand span:not(.brand-w) { color: var(--accent-gold); }
+
         .sidebar-close { background: none; border: none; color: var(--text-secondary); font-size: 20px; cursor: pointer; }
         
         .sidebar-grid { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border-color); }
@@ -83,8 +201,9 @@
         .sidebar-footer-links a:hover { color: var(--accent-gold); }
         .sidebar-copyright { padding: 20px; font-size: 10px; color: var(--text-secondary); line-height: 1.5; }
 
-        /* Dashboard Feed View */
-        .app-view { display: block; }
+        /* Dashboard Feed Views */
+        .app-view { display: none; }
+        .app-view.active-view { display: block; }
         
         /* Leaderboard */
         .radar-card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; margin-bottom: 20px; }
@@ -116,37 +235,70 @@
         .action-btn { background: none; border: none; color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
         .action-btn svg { width: 16px; height: 16px; fill: currentColor; }
         .action-btn:hover { color: var(--accent-gold); }
+        .action-btn.liked svg { fill: var(--accent-gold); }
         .action-btn.bookmarked svg { fill: var(--accent-gold); }
 
         /* Floating Action Button */
-        .fab-btn { position: fixed; bottom: 24px; right: 20px; background: var(--accent-gold); color: #000; border: none; padding: 14px 20px; border-radius: 30px; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,0.5); z-index: 90; }
+        .fab-btn { position: fixed; bottom: 80px; right: 20px; background: var(--accent-gold); color: #000; border: none; padding: 14px 20px; border-radius: 30px; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,0.5); z-index: 90; }
 
         /* Modals */
-        .modal-screen { display: none; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(15px); position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 100; padding: 20px; overflow-y: auto; }
+        .modal-screen { display: none; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(15px); position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 100; overflow-y: auto; padding: 20px 0 80px 0; }
+        
+        #reader-modal { z-index: 100; }
+        #reader-modal .container { max-width: 720px; }
+        #user-profile-modal { z-index: 250; } 
+        #user-profile-modal .container { max-width: 720px; }
+        
         .btn-back { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-bottom: 20px; cursor: pointer; }
         
-        /* Comments Section */
-        .comments-section { margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 20px; }
-        .comment-item { background: var(--bg-card); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; position: relative; }
-        .comment-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
-        .comment-user { font-weight: 700; color: var(--accent-gold); font-size: 11px; text-transform: uppercase; }
-        .comment-text { color: var(--text-primary); margin-bottom: 8px; line-height: 1.4; }
-        .comment-img { max-width: 100%; border-radius: 6px; margin-top: 6px; max-height: 180px; object-fit: cover; display: block; }
+        /* --- Comments Section --- */
+        .tiktok-comments-container { margin-top: 28px; background: rgba(16, 16, 16, 0.92); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; padding-bottom: 90px; }
+        .tiktok-comment-header { font-size: 13px; font-weight: 700; text-align: center; padding: 12px 0; color: var(--accent-gold); border-bottom: 1px solid var(--border-color); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
         
-        .replies-container { margin-left: 16px; border-left: 2px solid var(--border-color); padding-left: 10px; margin-top: 8px; }
-        .reply-item { background: var(--bg-elevated); padding: 8px 10px; border-radius: 6px; margin-top: 6px; font-size: 12px; position: relative; }
+        .tiktok-comment-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(47, 51, 54, 0.4); position: relative; }
+        .tiktok-comment-item:last-child { border-bottom: none; }
         
-        .comment-actions { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-secondary); margin-top: 6px; font-weight: 600; }
-        .comment-actions span:hover { color: var(--accent-gold); }
-        .admin-delete-btn { color: #ff4d4d; background: none; border: none; font-size: 11px; cursor: pointer; font-weight: 700; }
-        .admin-delete-btn:hover { text-decoration: underline; }
+        .tiktok-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-gold), #b8970f); color: #000; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; overflow: hidden; background-size: cover; background-position: center; }
+        .tiktok-comment-body { flex: 1; min-width: 0; padding-right: 36px; }
+        
+        .tiktok-username { font-size: 12px; color: var(--text-secondary); font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .tiktok-username:hover { color: var(--accent-gold); text-decoration: underline; }
+        
+        .tiktok-text { font-size: 14px; color: var(--text-primary); line-height: 1.5; word-break: break-word; margin-bottom: 6px; }
+        .tiktok-img { width: 100%; max-width: 220px; border-radius: 8px; margin-top: 6px; display: block; border: 1px solid var(--border-color); }
+        
+        .tiktok-meta-row { display: flex; align-items: center; gap: 16px; font-size: 11px; color: var(--text-secondary); margin-top: 6px; }
+        .tiktok-reply-btn { background: none; border: none; color: var(--text-secondary); font-weight: 600; cursor: pointer; font-size: 11px; }
+        .tiktok-reply-btn:hover { color: var(--text-primary); }
+
+        .delete-action-text { color: var(--accent-gold); cursor: pointer; font-size: 10px; font-weight: 600; }
+
+        .tiktok-like-box { position: absolute; right: 0; top: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; cursor: pointer; padding: 4px; }
+        .tiktok-like-box svg { width: 18px; height: 18px; fill: var(--text-secondary); transition: fill 0.2s ease; }
+        .tiktok-like-box.liked svg { fill: var(--accent-gold); }
+        .tiktok-like-count { font-size: 10px; color: var(--text-secondary); }
+
+        .tiktok-replies-container { margin-top: 10px; padding-left: 20px; border-left: 2px solid var(--border-color); background: rgba(0,0,0,0.3); border-radius: 0 8px 8px 0; padding-top: 4px; padding-bottom: 4px; }
+
+        /* Fixed Bottom Comment Input Bar */
+        .tiktok-input-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10, 10, 10, 0.98); border-top: 1px solid var(--border-color); padding: 12px 16px; display: flex; align-items: center; justify-content: center; z-index: 120; backdrop-filter: blur(10px); }
+        .tiktok-input-inner { max-width: 720px; width: 100%; margin: 0 auto; display: flex; align-items: center; gap: 10px; }
+        .tiktok-input { flex: 1; background: #161616; border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 16px; color: #fff; font-size: 13px; outline: none; }
+        .tiktok-input::placeholder { color: var(--text-secondary); }
+        .tiktok-send-btn { background: var(--accent-gold); color: #000; border: none; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer; }
 
         /* Profile View Styling */
         .profile-header { background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; backdrop-filter: blur(10px); }
-        .profile-avatar { width: 64px; height: 64px; background: var(--accent-gold); color: #000; font-weight: 800; font-size: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; }
+        .profile-avatar-display { width: 72px; height: 72px; background: var(--accent-gold); color: #000; font-weight: 800; font-size: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; overflow: hidden; background-size: cover; background-position: center; border: 2px solid var(--accent-gold); }
+        .profile-bio-text { font-size: 13px; color: var(--text-secondary); margin-top: 6px; line-height: 1.4; max-width: 400px; margin-left: auto; margin-right: auto; }
         .profile-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
         .profile-tab { background: none; border: none; color: var(--text-secondary); font-size: 13px; font-weight: 700; cursor: pointer; padding: 6px 12px; border-radius: 6px; }
         .profile-tab.active { background: var(--bg-elevated); color: var(--accent-gold); border: 1px solid var(--border-color); }
+
+        /* Avatar Picker Presets */
+        .avatar-presets { display: flex; gap: 8px; justify-content: center; margin-top: 8px; flex-wrap: wrap; }
+        .avatar-preset-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--bg-elevated); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .avatar-preset-btn:hover { border-color: var(--accent-gold); }
 
         /* Notifications Dropdown */
         .notification-dropdown { display: none; position: absolute; top: 60px; right: 16px; width: 300px; background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 8px; z-index: 250; padding: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
@@ -157,8 +309,8 @@
         .form-group { margin-bottom: 16px; }
         label { display: block; font-size: 11px; text-transform: uppercase; color: var(--accent-gold); font-weight: 700; margin-bottom: 6px; letter-spacing: 1px; }
         input, select, textarea { width: 100%; padding: 12px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; outline: none; }
-        textarea { height: 100px; resize: none; }
-        .btn-primary-action { width: 100%; background: var(--accent-gold); color: #000; border: none; padding: 14px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; margin-top: 10px; }
+        .btn-primary-action { width: 100%; background: var(--accent-gold); color: #000; border: none; padding: 14px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; margin-top: 10px; margin-bottom: 30px; }
+        .btn-secondary-action { width: 100%; background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; margin-top: 8px; }
     </style>
 </head>
 <body>
@@ -167,21 +319,22 @@
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <div class="sidebar-brand">West<span>Pulse</span></div>
+        <div class="sidebar-brand"><span class="brand-w">W</span>est<span>Pulse</span></div>
         <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
     </div>
     <div class="sidebar-grid">
         <div class="sidebar-column">
             <div class="sidebar-col-title">Navigation</div>
-            <a class="sidebar-link" onclick="toggleSidebar(); filterCategory('All Feed', document.querySelector('.cat-chip'))">Home Feed</a>
+            <a class="sidebar-link" onclick="toggleSidebar(); switchTab('home', document.querySelectorAll('.bottom-nav-btn')[0])">Home Feed</a>
             <a class="sidebar-link" onclick="toggleSidebar(); openProfileView()">My Profile & Bookmarks</a>
             <a class="sidebar-link" onclick="toggleSidebar(); openPublisher()">Publish Post</a>
+            <a class="sidebar-link" onclick="openSettingsModal()">Settings</a>
         </div>
         <div class="sidebar-column">
             <div class="sidebar-col-title">Categories</div>
-            <a class="sidebar-link" onclick="toggleSidebar(); filterCategory('Celeb Gossip')">Celeb Gossip</a>
-            <a class="sidebar-link" onclick="toggleSidebar(); filterCategory('Music & Drops')">Music & Drops</a>
-            <a class="sidebar-link" onclick="toggleSidebar(); filterCategory('Viral Trends')">Viral Trends</a>
+            <a class="sidebar-link" onclick="toggleSidebar(); switchTab('home', document.querySelectorAll('.bottom-nav-btn')[0]); filterCategory('Celeb Gossip', document.querySelector('.cat-chip'))">Celeb Gossip</a>
+            <a class="sidebar-link" onclick="toggleSidebar(); switchTab('home', document.querySelectorAll('.bottom-nav-btn')[0]); filterCategory('Music & Drops', document.querySelector('.cat-chip'))">Music & Drops</a>
+            <a class="sidebar-link" onclick="toggleSidebar(); switchTab('home', document.querySelectorAll('.bottom-nav-btn')[0]); filterCategory('Viral Trends', document.querySelector('.cat-chip'))">Viral Trends</a>
         </div>
     </div>
     <div class="sidebar-footer-links">
@@ -203,7 +356,7 @@
                 <span></span>
                 <span></span>
             </button>
-            <a class="brand-logo" onclick="filterCategory('All Feed', document.querySelector('.cat-chip'))">West<span>Pulse</span></a>
+            <a class="brand-logo" onclick="switchTab('home', document.querySelectorAll('.bottom-nav-btn')[0]); filterCategory('All Feed', document.querySelector('.cat-chip'))"><span class="brand-w">W</span>est<span>Pulse</span></a>
         </div>
         <div class="nav-right-actions">
             <div style="position: relative;">
@@ -221,17 +374,19 @@
 </div>
 
 <!-- Main Dashboard & News Feed View -->
-<div class="container app-view" id="dashboard-view">
-    <!-- Search Toolbar -->
+<div class="container app-view active-view" id="home-view">
     <div class="search-toolbar">
         <input type="text" id="search-bar" class="search-input" placeholder="Search stories or artists (e.g. Burna Boy)..." oninput="handleSearch(this.value)" onkeydown="if(event.key === 'Enter'){ triggerSearch(); }">
         <button class="search-btn" type="button" onclick="triggerSearch()">Search</button>
     </div>
 
-    <!-- Elites Welcome Banner -->
+    <!-- Premium Welcome Banner -->
     <div class="welcome-banner">
-        <div class="welcome-title">Welcome to the Inner Circle</div>
-        <div class="welcome-desc">You've arrived at WestPulse—the definitive nexus for elite pop culture intelligence, unedited celebrity gossip, and premier music drops. Stay sharp, stay informed.</div>
+        <div class="welcome-kicker">Welcome to the Inner Circle</div>
+        <div class="welcome-title">Where Pop Culture Meets Absolute Truth.</div>
+        <div class="welcome-desc">
+            You’ve stepped into <span class="welcome-highlight">WestPulse</span>—built for one singular purpose: to anchor the absolute pulse of elite celebrity intelligence, unfiltered gossip, and premier music drops. Stay sharp. Stay connected.
+        </div>
     </div>
 
     <div class="radar-card">
@@ -249,14 +404,45 @@
     <div id="article-feed"></div>
 </div>
 
-<!-- Profile View Modal -->
+<!-- Search & Discovery Tab View -->
+<div class="container app-view" id="search-tab-view">
+    <div class="search-tab-container">
+        <div class="search-toolbar" style="margin-bottom: 12px;">
+            <input type="text" id="tab-search-bar" class="search-input" placeholder="Search stories or artists..." oninput="handleTabSearch(this.value)">
+            <button class="search-btn" type="button" onclick="triggerTabSearch()">Search</button>
+        </div>
+        <div class="search-tab-actions">
+            <button class="search-filter-btn active" onclick="filterSearchTab('Trending', this)">Trending</button>
+            <button class="search-filter-btn" onclick="filterSearchTab('Sport', this)">Sport</button>
+            <button class="search-filter-btn" onclick="filterSearchTab('Entertainment', this)">Entertainment</button>
+        </div>
+    </div>
+
+    <div id="search-tab-feed"></div>
+</div>
+
+<!-- Bottom Navigation Bar -->
+<div class="bottom-nav">
+    <button class="bottom-nav-btn active" onclick="switchTab('home', this)">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Home</span>
+    </button>
+    <button class="bottom-nav-btn" onclick="switchTab('search-tab', this)">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <span>Explore</span>
+    </button>
+</div>
+
+<!-- Profile View Modal (My Profile) -->
 <div class="modal-screen" id="profile-modal">
     <div class="container">
         <button class="btn-back" onclick="closeProfileView()">← Back to Feed</button>
         <div class="profile-header">
-            <div class="profile-avatar" id="profile-initial">G</div>
+            <div class="profile-avatar-display" id="profile-modal-avatar">G</div>
             <h2 id="profile-name" style="font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 4px;">Guest User</h2>
-            <p style="font-size: 12px; color: var(--text-secondary);">WestPulse Elite Contributor</p>
+            <p style="font-size: 12px; color: var(--accent-gold); font-weight: 600;">WestPulse Elite Contributor</p>
+            <div class="profile-bio-text" id="profile-modal-bio">No bio set yet. Click Edit Profile to tell the community about yourself.</div>
+            <button class="btn-secondary-action" onclick="openEditProfileModal()" style="max-width: 180px; margin: 12px auto 0 auto;">Edit Profile</button>
         </div>
 
         <div class="profile-tabs">
@@ -268,31 +454,82 @@
     </div>
 </div>
 
+<!-- Edit Profile Modal -->
+<div class="modal-screen" id="edit-profile-modal">
+    <div class="container">
+        <button class="btn-back" onclick="closeEditProfileModal()">← Cancel</button>
+        <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 20px; color: var(--accent-gold);">Setup Profile</h2>
+        
+        <div class="form-group" style="text-align: center;">
+            <label>Profile Picture / Avatar</label>
+            <div class="profile-avatar-display" id="edit-preview-avatar" style="margin: 0 auto 12px auto;">G</div>
+            <input type="file" id="edit-avatar-file" accept="image/*" style="display: none;" onchange="previewAvatarImage(this)">
+            <button type="button" class="btn-secondary-action" onclick="document.getElementById('edit-avatar-file').click()" style="max-width: 220px; margin: 0 auto 10px auto;">Upload Photo</button>
+            <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 6px;">Or select an Avatar Emoji:</div>
+            <div class="avatar-presets">
+                <button type="button" class="avatar-preset-btn" onclick="selectAvatarEmoji('🦁')">🦁</button>
+                <button type="button" class="avatar-preset-btn" onclick="selectAvatarEmoji('🦅')">🦅</button>
+                <button type="button" class="avatar-preset-btn" onclick="selectAvatarEmoji('🔥')">🔥</button>
+                <button type="button" class="avatar-preset-btn" onclick="selectAvatarEmoji('⭐')">⭐</button>
+                <button type="button" class="avatar-preset-btn" onclick="selectAvatarEmoji('⚡')">⚡</button>
+                <button type="button" class="avatar-preset-btn" onclick="selectAvatarEmoji('👑')">👑</button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Display Name</label>
+            <input type="text" id="edit-username" placeholder="Your name...">
+        </div>
+        
+        <div class="form-group">
+            <label>Bio</label>
+            <textarea id="edit-bio" placeholder="Write a short bio about yourself..." style="height: 90px; resize: none;"></textarea>
+        </div>
+
+        <button class="btn-primary-action" onclick="saveUserProfileSettings()">Save Profile</button>
+    </div>
+</div>
+
+<!-- Public User Profile Modal (When clicking a commenter or author) -->
+<div class="modal-screen" id="user-profile-modal">
+    <div class="container">
+        <button class="btn-back" id="up-back-btn" onclick="closeUserProfileModal()">← Back</button>
+        <div class="profile-header">
+            <div class="profile-avatar-display" id="up-avatar">U</div>
+            <h2 id="up-username" style="font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 4px;">Username</h2>
+            <p style="font-size: 12px; color: var(--accent-gold); font-weight: 600;">WestPulse Community Member</p>
+            <div class="profile-bio-text" id="up-bio">No bio available.</div>
+        </div>
+        <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--accent-gold); letter-spacing: 1px; margin-bottom: 12px;">Published Posts</div>
+        <div id="up-posts-area"></div>
+    </div>
+</div>
+
 <button class="fab-btn" onclick="openPublisher()">+ Publish</button>
 
 <!-- Article Reader & Comments Modal -->
-<div class="modal-screen" id="reader-modal">
+<div class="modal-screen" id="reader-modal" style="padding-bottom: 90px;">
     <div class="container">
         <button class="btn-back" onclick="closeArticleReader()">← Back</button>
         <div id="reader-body"></div>
         
-        <div class="comments-section">
-            <h3 style="font-size: 12px; text-transform: uppercase; color: var(--accent-gold); font-weight: 700; margin-bottom: 12px; letter-spacing: 1px;">Discussion & Replies</h3>
+        <div class="tiktok-comments-container">
+            <div class="tiktok-comment-header" id="comments-count-title">Comments (0)</div>
             <div id="comments-list"></div>
-            
-            <div style="margin-top: 16px; background: var(--bg-card); padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;">
-                <input type="text" id="comment-input" placeholder="Write a comment..." style="margin-bottom: 8px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <input type="file" id="comment-file-input" accept="image/*" style="display: none;" onchange="previewCommentImage(this)">
-                    <button type="button" onclick="document.getElementById('comment-file-input').click()" style="background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; font-size: 11px; cursor: pointer;">📷 Attach Image</button>
-                    <button onclick="submitMainComment()" class="btn-signin" style="padding: 6px 16px; font-size: 12px;">Post Comment</button>
-                </div>
-                <div id="comment-img-preview-container" style="margin-top: 8px; display: none; position: relative; width: fit-content;">
-                    <img id="comment-img-preview" style="max-height: 80px; border-radius: 4px;">
-                    <span onclick="clearCommentImage()" style="position: absolute; top: -6px; right: -6px; background: red; color: #fff; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-size: 10px; cursor: pointer;">✕</span>
-                </div>
-            </div>
         </div>
+    </div>
+
+    <div class="tiktok-input-bar">
+        <div class="tiktok-input-inner">
+            <input type="text" id="comment-input" class="tiktok-input" placeholder="Add comment...">
+            <input type="file" id="comment-file-input" accept="image/*" style="display: none;" onchange="previewCommentImage(this)">
+            <button type="button" onclick="document.getElementById('comment-file-input').click()" style="background:none; border:none; color:var(--text-secondary); font-size:18px; cursor:pointer;" title="Attach Image">📷</button>
+            <button onclick="submitMainComment()" class="tiktok-send-btn">Post</button>
+        </div>
+    </div>
+    <div id="comment-img-preview-container" style="display: none; position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: #000; padding: 4px; border: 1px solid var(--border-color); border-radius: 8px; z-index: 130;">
+        <img id="comment-img-preview" style="max-height: 40px; border-radius: 4px;">
+        <span onclick="clearCommentImage()" style="cursor: pointer; color: #ff0000; font-size: 12px; margin-left: 6px;">✕</span>
     </div>
 </div>
 
@@ -316,6 +553,8 @@
                 <option value="Celeb Gossip">Celeb Gossip</option>
                 <option value="Music & Drops">Music & Drops</option>
                 <option value="Viral Trends">Viral Trends</option>
+                <option value="Sport">Sport</option>
+                <option value="Entertainment">Entertainment</option>
             </select>
         </div>
         <div class="form-group">
@@ -328,9 +567,41 @@
         </div>
         <div class="form-group">
             <label>Full Story Content</label>
-            <textarea id="p-content" placeholder="Write full article content..."></textarea>
+            <textarea id="p-content" placeholder="Write full article content..." style="height: 100px; resize: none;"></textarea>
         </div>
         <button class="btn-primary-action" onclick="saveNewArticle()">Publish Story</button>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-screen" id="settings-modal">
+    <div class="container">
+        <button class="btn-back" onclick="closeSettingsModal()">← Back</button>
+        <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 20px; color: var(--accent-gold);">Platform Settings</h2>
+        
+        <div class="form-group">
+            <label>Display Theme Mode</label>
+            <select id="setting-theme" onchange="updateSettingsTheme(this.value)">
+                <option value="gold">Default Gold & Obsidian</option>
+                <option value="charcoal">Charcoal Dark Mode</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Push Notifications</label>
+            <select id="setting-notifications">
+                <option value="enabled">Enabled (All Activity)</option>
+                <option value="muted">Muted</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Default Content Feed View</label>
+            <select id="setting-default-feed">
+                <option value="All Feed">All Feed</option>
+                <option value="Celeb Gossip">Celeb Gossip Only</option>
+                <option value="Music & Drops">Music & Drops Only</option>
+            </select>
+        </div>
+        <button class="btn-primary-action" onclick="saveSettings()">Save Preferences</button>
     </div>
 </div>
 
@@ -365,7 +636,7 @@ let defaultArticles = [
         author: 'Admin',
         likes: 42,
         comments: [
-            { id: 'c-1', user: 'Fan_01', text: 'Odogwu standard!', image: '', replies: [{ id: 'r-1', user: 'Admin', text: 'No doubts about that!' }] }
+            { id: 'c-1', user: 'Fan_01', userAvatar: '🦁', userBio: 'Certified music lover & culture vulture.', text: 'Odogwu standard!', image: '', likes: 5, liked: false, replies: [{ id: 'r-1', user: 'Admin', userAvatar: '👑', userBio: 'Platform Administrator', text: 'No doubts about that!', likes: 2, liked: false }] }
         ]
     }
 ];
@@ -374,12 +645,23 @@ let currentFilter = 'All Feed';
 let searchQuery = '';
 let activeArticleId = null;
 let currentUsername = 'Guest User';
+let currentUserBio = 'WestPulse community member.';
+let currentUserAvatar = ''; 
 let publisherImageBase64 = '';
 let commentImageBase64 = '';
+let editAvatarBase64 = '';
 let replyingToCommentId = null;
 let notifications = [];
 let bookmarks = [];
+let likedArticles = [];
 let activeProfileTab = 'published';
+let cameFromArticleReader = false; 
+let settingsCallerModal = null; 
+let wasSidebarOpenBeforeSettings = false; 
+
+// Search Tab State Variables
+let searchTabFilter = 'Trending';
+let searchTabQuery = '';
 
 const infoContent = {
     terms: `
@@ -410,6 +692,58 @@ function openInfo(type) {
 
 function closeInfoModal() { document.getElementById('info-modal').style.display = 'none'; }
 
+function openSettingsModal() { 
+    const sidebar = document.getElementById('sidebar');
+    wasSidebarOpenBeforeSettings = sidebar.classList.contains('open');
+    if (wasSidebarOpenBeforeSettings) {
+        toggleSidebar(); 
+    }
+
+    if (document.getElementById('profile-modal').style.display === 'block') {
+        settingsCallerModal = 'profile-modal';
+        document.getElementById('profile-modal').style.display = 'none';
+    } else {
+        settingsCallerModal = null;
+    }
+    document.getElementById('settings-modal').style.display = 'block'; 
+}
+
+function closeSettingsModal() { 
+    document.getElementById('settings-modal').style.display = 'none';
+    
+    if (wasSidebarOpenBeforeSettings) {
+        toggleSidebar();
+        wasSidebarOpenBeforeSettings = false;
+        return;
+    }
+
+    if (settingsCallerModal === 'profile-modal') {
+        document.getElementById('profile-modal').style.display = 'block';
+        settingsCallerModal = null;
+    }
+}
+
+function updateSettingsTheme(val) {
+    const root = document.documentElement;
+    if (val === 'charcoal') {
+        root.style.setProperty('--accent-gold', '#3ea6ff');
+        root.style.setProperty('--bg-elevated', 'rgba(30, 30, 30, 0.9)');
+    } else {
+        root.style.setProperty('--accent-gold', '#f3c614');
+        root.style.setProperty('--bg-elevated', 'rgba(22, 22, 22, 0.9)');
+    }
+}
+
+function saveSettings() {
+    const theme = document.getElementById('setting-theme').value;
+    const notif = document.getElementById('setting-notifications').value;
+    const feed = document.getElementById('setting-default-feed').value;
+    
+    localStorage.setItem('westpulse_settings', JSON.stringify({ theme, notif, feed }));
+    alert('Settings saved successfully!');
+    closeSettingsModal();
+}
+
 function toggleSidebar() {
     const sb = document.getElementById('sidebar');
     const ov = document.getElementById('sidebar-overlay');
@@ -418,14 +752,25 @@ function toggleSidebar() {
     ov.style.display = isOpen ? 'none' : 'block';
 }
 
+function switchTab(viewId, el) {
+    document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active-view'));
+    document.querySelectorAll('.bottom-nav-btn').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById(viewId + '-view').classList.add('active-view');
+    if (el) el.classList.add('active');
+
+    if (viewId === 'search-tab') {
+        renderSearchTabFeed();
+    }
+}
+
 function handleGoogleSignIn() {
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(provider).then((result) => {
         currentUsername = result.user.displayName || 'User';
         document.getElementById('auth-btn').innerText = '✓ ' + currentUsername;
-        document.getElementById('profile-name').innerText = currentUsername;
-        document.getElementById('profile-initial').innerText = currentUsername.charAt(0).toUpperCase();
-        loadBookmarks();
+        loadUserData();
+        updateProfileDisplayUI();
     }).catch(err => alert(err.message));
 }
 
@@ -437,6 +782,27 @@ document.getElementById('p-file').addEventListener('change', function(e) {
         reader.readAsDataURL(file);
     }
 });
+
+function previewAvatarImage(input) {
+    const file = input.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            editAvatarBase64 = ev.target.result;
+            const preview = document.getElementById('edit-preview-avatar');
+            preview.style.backgroundImage = `url('${editAvatarBase64}')`;
+            preview.innerText = '';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function selectAvatarEmoji(emoji) {
+    editAvatarBase64 = emoji;
+    const preview = document.getElementById('edit-preview-avatar');
+    preview.style.backgroundImage = 'none';
+    preview.innerText = emoji;
+}
 
 function previewCommentImage(input) {
     const file = input.files[0];
@@ -458,27 +824,110 @@ function clearCommentImage() {
 }
 
 function getArticles() {
-    let stored = localStorage.getItem('westpulse_articles_v3');
+    let stored = localStorage.getItem('westpulse_articles_gold_v1');
     if (!stored) {
-        localStorage.setItem('westpulse_articles_v3', JSON.stringify(defaultArticles));
+        localStorage.setItem('westpulse_articles_gold_v1', JSON.stringify(defaultArticles));
         return defaultArticles;
     }
     return JSON.parse(stored);
 }
 
 function saveArticles(list) {
-    localStorage.setItem('westpulse_articles_v3', JSON.stringify(list));
+    localStorage.setItem('westpulse_articles_gold_v1', JSON.stringify(list));
     renderFeed();
+    renderSearchTabFeed();
     updateLeaderboard();
 }
 
-function loadBookmarks() {
-    let stored = localStorage.getItem('westpulse_bookmarks_' + currentUsername);
-    bookmarks = stored ? JSON.parse(stored) : [];
+function loadUserData() {
+    let bStored = localStorage.getItem('westpulse_bookmarks_' + currentUsername);
+    bookmarks = bStored ? JSON.parse(bStored) : [];
+
+    let lStored = localStorage.getItem('westpulse_likes_' + currentUsername);
+    likedArticles = lStored ? JSON.parse(lStored) : [];
+
+    let bioStored = localStorage.getItem('westpulse_bio_' + currentUsername);
+    currentUserBio = bioStored !== null ? bioStored : 'WestPulse community member.';
+
+    let avatarStored = localStorage.getItem('westpulse_avatar_' + currentUsername);
+    currentUserAvatar = avatarStored !== null ? avatarStored : '';
 }
 
-function saveBookmarks() {
+function saveUserData() {
     localStorage.setItem('westpulse_bookmarks_' + currentUsername, JSON.stringify(bookmarks));
+    localStorage.setItem('westpulse_likes_' + currentUsername, JSON.stringify(likedArticles));
+    localStorage.setItem('westpulse_bio_' + currentUsername, currentUserBio);
+    localStorage.setItem('westpulse_avatar_' + currentUsername, currentUserAvatar);
+}
+
+function getUserProfileData(username) {
+    let bio = localStorage.getItem('westpulse_bio_' + username) || 'WestPulse community member.';
+    let avatar = localStorage.getItem('westpulse_avatar_' + username) || '';
+    return { bio, avatar };
+}
+
+function updateProfileDisplayUI() {
+    document.getElementById('profile-name').innerText = currentUsername;
+    document.getElementById('profile-modal-bio').innerText = currentUserBio;
+    
+    const avatarEl = document.getElementById('profile-modal-avatar');
+    if (currentUserAvatar) {
+        if (currentUserAvatar.startsWith('data:image') || currentUserAvatar.startsWith('http')) {
+            avatarEl.style.backgroundImage = `url('${currentUserAvatar}')`;
+            avatarEl.innerText = '';
+        } else {
+            avatarEl.style.backgroundImage = 'none';
+            avatarEl.innerText = currentUserAvatar;
+        }
+    } else {
+        avatarEl.style.backgroundImage = 'none';
+        avatarEl.innerText = currentUsername.charAt(0).toUpperCase();
+    }
+}
+
+function openEditProfileModal() {
+    document.getElementById('edit-username').value = currentUsername;
+    document.getElementById('edit-bio').value = currentUserBio;
+    editAvatarBase64 = currentUserAvatar;
+    
+    const preview = document.getElementById('edit-preview-avatar');
+    if (editAvatarBase64) {
+        if (editAvatarBase64.startsWith('data:image') || editAvatarBase64.startsWith('http')) {
+            preview.style.backgroundImage = `url('${editAvatarBase64}')`;
+            preview.innerText = '';
+        } else {
+            preview.style.backgroundImage = 'none';
+            preview.innerText = editAvatarBase64;
+        }
+    } else {
+        preview.style.backgroundImage = 'none';
+        preview.innerText = currentUsername.charAt(0).toUpperCase();
+    }
+
+    document.getElementById('profile-modal').style.display = 'none';
+    document.getElementById('edit-profile-modal').style.display = 'block';
+}
+
+function closeEditProfileModal() {
+    document.getElementById('edit-profile-modal').style.display = 'none';
+    document.getElementById('profile-modal').style.display = 'block';
+}
+
+function saveUserProfileSettings() {
+    const newName = document.getElementById('edit-username').value.trim();
+    const newBio = document.getElementById('edit-bio').value.trim();
+
+    if (newName) {
+        currentUsername = newName;
+        document.getElementById('auth-btn').innerText = '✓ ' + currentUsername;
+    }
+    currentUserBio = newBio || 'WestPulse community member.';
+    currentUserAvatar = editAvatarBase64;
+
+    saveUserData();
+    updateProfileDisplayUI();
+    closeEditProfileModal();
+    alert('Profile updated successfully!');
 }
 
 function toggleBookmark(id, event) {
@@ -489,8 +938,29 @@ function toggleBookmark(id, event) {
     } else {
         bookmarks.push(id);
     }
-    saveBookmarks();
+    saveUserData();
     renderFeed();
+    renderSearchTabFeed();
+}
+
+function toggleLike(id, event) {
+    if (event) event.stopPropagation();
+    const list = getArticles();
+    const art = list.find(a => a.id === id);
+    if (!art) return;
+
+    const likedIndex = likedArticles.indexOf(id);
+    if (likedIndex > -1) {
+        likedArticles.splice(likedIndex, 1);
+        art.likes = Math.max(0, (art.likes || 1) - 1);
+    } else {
+        likedArticles.push(id);
+        art.likes = (art.likes || 0) + 1;
+        addNotification(`Your story "${art.title}" received a new like!`);
+    }
+
+    saveArticles(list);
+    saveUserData();
 }
 
 function updateLeaderboard() {
@@ -538,6 +1008,95 @@ function triggerSearch() {
     handleSearch(inputVal);
 }
 
+// Search Tab Functions
+function filterSearchTab(filterName, el) {
+    document.querySelectorAll('.search-filter-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    searchTabFilter = filterName;
+    renderSearchTabFeed();
+}
+
+function handleTabSearch(query) {
+    searchTabQuery = query.toLowerCase().trim();
+    renderSearchTabFeed();
+}
+
+function triggerTabSearch() {
+    const val = document.getElementById('tab-search-bar').value;
+    handleTabSearch(val);
+}
+
+function renderSearchTabFeed() {
+    const list = getArticles();
+    const feed = document.getElementById('search-tab-feed');
+    feed.innerHTML = '';
+
+    let filtered = [];
+    if (searchTabFilter === 'Trending') {
+        filtered = [...list].sort((a, b) => (b.likes || 0) - (a.likes || 0));
+    } else if (searchTabFilter === 'Sport') {
+        filtered = list.filter(a => a.category === 'Sport');
+    } else if (searchTabFilter === 'Entertainment') {
+        filtered = list.filter(a => a.category === 'Entertainment' || a.category === 'Celeb Gossip' || a.category === 'Music & Drops');
+    }
+
+    if (searchTabQuery) {
+        filtered = filtered.filter(a => {
+            const titleMatch = a.title && a.title.toLowerCase().includes(searchTabQuery);
+            const artistMatch = a.artist && a.artist.toLowerCase().includes(searchTabQuery);
+            const snippetMatch = a.snippet && a.snippet.toLowerCase().includes(searchTabQuery);
+            return titleMatch || artistMatch || snippetMatch;
+        });
+    }
+
+    if (filtered.length === 0) {
+        feed.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">No stories found matching your criteria.</div>';
+        return;
+    }
+
+    filtered.forEach(art => {
+        let banner = art.imageUrl ? `<img src="${art.imageUrl}" class="card-banner">` : '';
+        let isBookmarked = bookmarks.includes(art.id);
+        let isLiked = likedArticles.includes(art.id);
+        let totalComments = art.comments ? art.comments.reduce((acc, c) => acc + 1 + (c.replies ? c.replies.length : 0), 0) : 0;
+        let isAdmin = currentUsername === 'Admin' || currentUsername === art.author;
+
+        feed.innerHTML += `
+            <div class="featured-card">
+                ${banner}
+                <div class="card-body" onclick="openArticle('${art.id}')">
+                    <span class="meta-tag">${art.category} • By <span onclick="event.stopPropagation(); openUserProfile('${art.author || 'Guest User'}', false)">${art.author || 'Guest User'}</span></span>
+                    <h2 class="card-title">${art.title}</h2>
+                    <p class="card-snippet">${art.snippet}</p>
+                </div>
+                <div class="engagement-bar">
+                    <div class="action-group">
+                        <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${art.id}', event)">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                            <span>${art.likes || 0}</span>
+                        </button>
+                        <button class="action-btn" onclick="openArticle('${art.id}')">
+                            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+                            <span>${totalComments}</span>
+                        </button>
+                        <button class="action-btn ${isBookmarked ? 'bookmarked' : ''}" onclick="toggleBookmark('${art.id}', event)">
+                            <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                            <span>Save</span>
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button class="action-btn" onclick="shareArticle('${art.id}', event)">
+                            <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+                            <span>Share</span>
+                        </button>
+                        ${isAdmin ? `<button class="admin-delete-btn" style="background:none; border:none; color:var(--text-secondary); font-size:11px; cursor:pointer;" onclick="deleteArticle('${art.id}', event)">Delete</button>` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+}
+
 function renderFeed() {
     const list = getArticles();
     const feed = document.getElementById('article-feed');
@@ -562,25 +1121,27 @@ function renderFeed() {
     filtered.forEach(art => {
         let banner = art.imageUrl ? `<img src="${art.imageUrl}" class="card-banner">` : '';
         let isBookmarked = bookmarks.includes(art.id);
+        let isLiked = likedArticles.includes(art.id);
+        let totalComments = art.comments ? art.comments.reduce((acc, c) => acc + 1 + (c.replies ? c.replies.length : 0), 0) : 0;
         let isAdmin = currentUsername === 'Admin' || currentUsername === art.author;
 
         feed.innerHTML += `
             <div class="featured-card">
                 ${banner}
                 <div class="card-body" onclick="openArticle('${art.id}')">
-                    <span class="meta-tag">${art.category} • By ${art.author || 'Guest User'}</span>
+                    <span class="meta-tag">${art.category} • By <span onclick="event.stopPropagation(); openUserProfile('${art.author || 'Guest User'}', false)">${art.author || 'Guest User'}</span></span>
                     <h2 class="card-title">${art.title}</h2>
                     <p class="card-snippet">${art.snippet}</p>
                 </div>
                 <div class="engagement-bar">
                     <div class="action-group">
-                        <button class="action-btn" onclick="toggleLike('${art.id}')">
+                        <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${art.id}', event)">
                             <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             <span>${art.likes || 0}</span>
                         </button>
                         <button class="action-btn" onclick="openArticle('${art.id}')">
                             <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
-                            <span>${art.comments ? art.comments.length : 0}</span>
+                            <span>${totalComments}</span>
                         </button>
                         <button class="action-btn ${isBookmarked ? 'bookmarked' : ''}" onclick="toggleBookmark('${art.id}', event)">
                             <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
@@ -592,7 +1153,7 @@ function renderFeed() {
                             <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
                             <span>Share</span>
                         </button>
-                        ${isAdmin ? `<button class="admin-delete-btn" onclick="deleteArticle('${art.id}', event)">Delete</button>` : ''}
+                        ${isAdmin ? `<button class="admin-delete-btn" style="background:none; border:none; color:var(--text-secondary); font-size:11px; cursor:pointer;" onclick="deleteArticle('${art.id}', event)">Delete</button>` : ''}
                     </div>
                 </div>
             </div>
@@ -606,30 +1167,11 @@ function shareArticle(id, event) {
     const art = list.find(a => a.id === id);
     if (!art) return;
 
-    const shareData = {
-        title: art.title,
-        text: art.snippet,
-        url: window.location.href
-    };
-
+    const shareData = { title: art.title, text: art.snippet, url: window.location.href };
     if (navigator.share) {
         navigator.share(shareData).catch((err) => console.log('Share canceled', err));
     } else {
-        navigator.clipboard.writeText(window.location.href).then(() => {
-            alert('Article link copied to clipboard!');
-        }).catch(() => {
-            alert('Unable to share article.');
-        });
-    }
-}
-
-function toggleLike(id) {
-    const list = getArticles();
-    const art = list.find(a => a.id === id);
-    if (art) {
-        art.likes = (art.likes || 0) + 1;
-        saveArticles(list);
-        addNotification(`Your story "${art.title}" received a new like!`);
+        navigator.clipboard.writeText(window.location.href).then(() => alert('Article link copied to clipboard!'));
     }
 }
 
@@ -651,12 +1193,9 @@ function openArticle(id) {
 
     document.getElementById('reader-body').innerHTML = `
         <span class="meta-tag">${art.category}</span>
-        <h1 style="font-size: 26px; font-weight: 800; line-height: 1.2; margin-bottom: 14px;">${art.title}</h1>
-        ${art.imageUrl ? `<img src="${art.imageUrl}" style="width:100%; border-radius:8px; margin-bottom:14px;">` : ''}
-        <div style="font-size: 15px; color: var(--text-secondary); line-height: 1.6;">${art.content}</div>
-        <div style="margin-top: 20px;">
-            <button class="btn-signin" onclick="shareArticle('${art.id}')" style="width: 100%;">Share Article</button>
-        </div>
+        <h1 style="font-size: 24px; font-weight: 800; line-height: 1.2; margin-bottom: 12px;">${art.title}</h1>
+        ${art.imageUrl ? `<img src="${art.imageUrl}" style="width:100%; border-radius:8px; margin-bottom:12px;">` : ''}
+        <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;">${art.content}</div>
     `;
 
     renderComments(art);
@@ -666,44 +1205,185 @@ function openArticle(id) {
 function renderComments(art) {
     const container = document.getElementById('comments-list');
     container.innerHTML = '';
+    
+    let totalCount = art.comments ? art.comments.reduce((acc, c) => acc + 1 + (c.replies ? c.replies.length : 0), 0) : 0;
+    document.getElementById('comments-count-title').innerText = `Comments (${totalCount})`;
+
     if (!art.comments || art.comments.length === 0) {
-        container.innerHTML = '<div style="font-size: 12px; color: var(--text-secondary);">No comments yet. Be the first to join the discussion.</div>';
+        container.innerHTML = '<div style="text-align:center; font-size: 13px; color: var(--text-secondary); padding: 24px;">No comments yet. Be the first to share your thoughts!</div>';
         return;
     }
 
     art.comments.forEach(c => {
-        let imgHtml = c.image ? `<img src="${c.image}" class="comment-img">` : '';
+        let profileData = getUserProfileData(c.user);
+        let avatarMarkup = '';
+        if (profileData.avatar) {
+            if (profileData.avatar.startsWith('data:image') || profileData.avatar.startsWith('http')) {
+                avatarMarkup = `<div class="tiktok-avatar" style="background-image: url('${profileData.avatar}');" onclick="event.stopPropagation(); openUserProfile('${c.user}', true)"></div>`;
+            } else {
+                avatarMarkup = `<div class="tiktok-avatar" onclick="event.stopPropagation(); openUserProfile('${c.user}', true)">${profileData.avatar}</div>`;
+            }
+        } else {
+            avatarMarkup = `<div class="tiktok-avatar" onclick="event.stopPropagation(); openUserProfile('${c.user}', true)">${c.user ? c.user.charAt(0).toUpperCase() : 'U'}</div>`;
+        }
+
+        let imgHtml = c.image ? `<img src="${c.image}" class="tiktok-img">` : '';
+        let isLikedClass = c.liked ? 'liked' : '';
+        let commentLikes = c.likes || 0;
+        let canDelete = currentUsername === 'Admin' || currentUsername === c.user;
+
         let repliesHtml = '';
         if (c.replies && c.replies.length > 0) {
             c.replies.forEach(r => {
+                let rProfile = getUserProfileData(r.user);
+                let rAvatarMarkup = '';
+                if (rProfile.avatar) {
+                    if (rProfile.avatar.startsWith('data:image') || rProfile.avatar.startsWith('http')) {
+                        rAvatarMarkup = `<div class="tiktok-avatar" style="width:28px; height:28px; font-size:11px; background-image: url('${rProfile.avatar}');" onclick="event.stopPropagation(); openUserProfile('${r.user}', true)"></div>`;
+                    } else {
+                        rAvatarMarkup = `<div class="tiktok-avatar" style="width:28px; height:28px; font-size:11px;" onclick="event.stopPropagation(); openUserProfile('${r.user}', true)">${rProfile.avatar}</div>`;
+                    }
+                } else {
+                    rAvatarMarkup = `<div class="tiktok-avatar" style="width:28px; height:28px; font-size:11px;" onclick="event.stopPropagation(); openUserProfile('${r.user}', true)">${r.user ? r.user.charAt(0).toUpperCase() : 'U'}</div>`;
+                }
+
+                let rLikedClass = r.liked ? 'liked' : '';
+                let rLikes = r.likes || 0;
                 let canDeleteReply = currentUsername === 'Admin' || currentUsername === r.user;
+
                 repliesHtml += `
-                    <div class="reply-item">
-                        <div style="font-weight: 700; color: var(--accent-gold); font-size: 10px;">${r.user}</div>
-                        <div>${r.text}</div>
-                        ${canDeleteReply ? `<button class="admin-delete-btn" style="position: absolute; top: 6px; right: 8px;" onclick="deleteReply('${art.id}', '${c.id}', '${r.id}')">Delete</button>` : ''}
+                    <div class="tiktok-comment-item" style="padding-top: 8px;">
+                        ${rAvatarMarkup}
+                        <div class="tiktok-comment-body">
+                            <div class="tiktok-username" onclick="event.stopPropagation(); openUserProfile('${r.user}', true)">${r.user} ${canDeleteReply ? `<span class="delete-action-text" onclick="event.stopPropagation(); deleteReply('${art.id}', '${c.id}', '${r.id}')">· Delete</span>` : ''}</div>
+                            <div class="tiktok-text">${r.text}</div>
+                            <div class="tiktok-meta-row">
+                                <span>Just now</span>
+                            </div>
+                        </div>
+                        <button class="tiktok-like-box ${rLikedClass}" onclick="toggleReplyLike('${art.id}', '${c.id}', '${r.id}')">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                            <span class="tiktok-like-count">${rLikes}</span>
+                        </button>
                     </div>
                 `;
             });
         }
 
-        let canDeleteComment = currentUsername === 'Admin' || currentUsername === c.user;
-
         container.innerHTML += `
-            <div class="comment-item">
-                <div class="comment-header">
-                    <span class="comment-user">${c.user}</span>
+            <div class="tiktok-comment-item">
+                ${avatarMarkup}
+                <div class="tiktok-comment-body">
+                    <div class="tiktok-username" onclick="event.stopPropagation(); openUserProfile('${c.user}', true)">${c.user} ${canDelete ? `<span class="delete-action-text" onclick="event.stopPropagation(); deleteComment('${art.id}', '${c.id}')">· Delete</span>` : ''}</div>
+                    <div class="tiktok-text">${c.text}</div>
+                    ${imgHtml}
+                    <div class="tiktok-meta-row">
+                        <span>1d ago</span>
+                        <button class="tiktok-reply-btn" onclick="setReplyTarget('${c.id}', '${c.user}')">Reply</button>
+                    </div>
+                    ${c.replies && c.replies.length > 0 ? `
+                        <div class="tiktok-replies-container">
+                            ${repliesHtml}
+                        </div>
+                    ` : ''}
                 </div>
-                <div class="comment-text">${c.text}</div>
-                ${imgHtml}
-                <div class="comment-actions">
-                    <span onclick="setReplyTarget('${c.id}', '${c.user}')">↳ Reply</span>
-                    ${canDeleteComment ? `<button class="admin-delete-btn" onclick="deleteComment('${art.id}', '${c.id}')">Delete Comment</button>` : ''}
-                </div>
-                ${repliesHtml ? `<div class="replies-container">${repliesHtml}</div>` : ''}
+                <button class="tiktok-like-box ${isLikedClass}" onclick="toggleCommentLike('${art.id}', '${c.id}')">
+                    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    <span class="tiktok-like-count">${commentLikes}</span>
+                </button>
             </div>
         `;
     });
+}
+
+function openUserProfile(username, fromReader = false) {
+    cameFromArticleReader = fromReader;
+    
+    if (cameFromArticleReader) {
+        document.getElementById('reader-modal').style.display = 'none';
+        document.getElementById('up-back-btn').innerText = '← Back to Comments';
+    } else {
+        document.getElementById('up-back-btn').innerText = '← Back';
+    }
+
+    document.getElementById('up-username').innerText = username;
+    let profileData = getUserProfileData(username);
+    document.getElementById('up-bio').innerText = profileData.bio;
+
+    const upAvatar = document.getElementById('up-avatar');
+    if (profileData.avatar) {
+        if (profileData.avatar.startsWith('data:image') || profileData.avatar.startsWith('http')) {
+            upAvatar.style.backgroundImage = `url('${profileData.avatar}')`;
+            upAvatar.innerText = '';
+        } else {
+            upAvatar.style.backgroundImage = 'none';
+            upAvatar.innerText = profileData.avatar;
+        }
+    } else {
+        upAvatar.style.backgroundImage = 'none';
+        upAvatar.innerText = username.charAt(0).toUpperCase();
+    }
+    
+    const list = getArticles();
+    const userPosts = list.filter(a => a.author === username);
+    const area = document.getElementById('up-posts-area');
+    area.innerHTML = '';
+
+    if (userPosts.length === 0) {
+        area.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">This user hasn\'t published any posts yet.</div>';
+    } else {
+        userPosts.forEach(art => {
+            area.innerHTML += `
+                <div class="featured-card" onclick="closeUserProfileModal(); openArticle('${art.id}')">
+                    <div class="card-body">
+                        <span class="meta-tag">${art.category}</span>
+                        <h2 class="card-title">${art.title}</h2>
+                        <p class="card-snippet">${art.snippet}</p>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    document.getElementById('user-profile-modal').style.display = 'block';
+}
+
+function closeUserProfileModal() {
+    document.getElementById('user-profile-modal').style.display = 'none';
+    if (cameFromArticleReader && activeArticleId) {
+        document.getElementById('reader-modal').style.display = 'block';
+    }
+}
+
+function toggleCommentLike(articleId, commentId) {
+    const list = getArticles();
+    const art = list.find(a => a.id === articleId);
+    if (art) {
+        const comment = art.comments.find(c => c.id === commentId);
+        if (comment) {
+            comment.liked = !comment.liked;
+            comment.likes = (comment.likes || 0) + (comment.liked ? 1 : -1);
+            saveArticles(list);
+            renderComments(art);
+        }
+    }
+}
+
+function toggleReplyLike(articleId, commentId, replyId) {
+    const list = getArticles();
+    const art = list.find(a => a.id === articleId);
+    if (art) {
+        const comment = art.comments.find(c => c.id === commentId);
+        if (comment && comment.replies) {
+            const reply = comment.replies.find(r => r.id === replyId);
+            if (reply) {
+                reply.liked = !reply.liked;
+                reply.likes = (reply.likes || 0) + (reply.liked ? 1 : -1);
+                saveArticles(list);
+                renderComments(art);
+            }
+        }
+    }
 }
 
 function deleteComment(articleId, commentId) {
@@ -732,7 +1412,7 @@ function deleteReply(articleId, commentId, replyId) {
 function setReplyTarget(commentId, username) {
     replyingToCommentId = commentId;
     const input = document.getElementById('comment-input');
-    input.placeholder = `Replying to ${username}...`;
+    input.placeholder = `Replying to @${username}...`;
     input.focus();
 }
 
@@ -748,11 +1428,11 @@ function submitMainComment() {
         const comment = art.comments.find(c => c.id === replyingToCommentId);
         if (comment) {
             if (!comment.replies) comment.replies = [];
-            comment.replies.push({ id: 'r-' + Date.now(), user: currentUsername, text });
+            comment.replies.push({ id: 'r-' + Date.now(), user: currentUsername, text, likes: 0, liked: false });
             addNotification(`New reply on story "${art.title}"`);
         }
         replyingToCommentId = null;
-        document.getElementById('comment-input').placeholder = 'Write a comment...';
+        document.getElementById('comment-input').placeholder = 'Add comment...';
     } else {
         if (!art.comments) art.comments = [];
         art.comments.push({
@@ -760,6 +1440,8 @@ function submitMainComment() {
             user: currentUsername,
             text,
             image: commentImageBase64,
+            likes: 0,
+            liked: false,
             replies: []
         });
         addNotification(`New comment on your story "${art.title}"`);
@@ -790,7 +1472,8 @@ function toggleNotifications() {
 }
 
 function openProfileView() {
-    loadBookmarks();
+    loadUserData();
+    updateProfileDisplayUI();
     document.getElementById('profile-modal').style.display = 'block';
     renderProfileContent();
 }
@@ -889,7 +1572,10 @@ function saveNewArticle() {
     closePublisher();
 }
 
+loadUserData();
+updateProfileDisplayUI();
 renderFeed();
+renderSearchTabFeed();
 updateLeaderboard();
 </script>
 
