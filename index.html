@@ -52,10 +52,10 @@
         .notification-badge { position: absolute; top: -4px; right: -4px; background: red; color: white; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 10px; display: none; }
         .btn-signin { background: var(--accent-gold); color: #000; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; }
 
-     <!-- Search Toolbar -->
-    <div class="search-toolbar" style="display: flex; gap: 8px;">
-        <input type="text" id="search-bar" class="search-input" placeholder="Search stories or artists (e.g. Burna Boy)..." oninput="handleSearch(this.value)" style="flex: 1;">
-        <button onclick="handleSearch(document.getElementById('search-bar').value)" class="btn-signin" style="padding: 10px 16px; white-space: nowrap;">Search</button>
+         <!-- Search Toolbar -->
+    <div class="search-toolbar" style="display: flex; gap: 8px; margin-bottom: 16px; align-items: center;">
+        <input type="text" id="search-bar" class="search-input" placeholder="Search stories or artists (e.g. Burna Boy)..." oninput="handleSearch(this.value)" style="flex: 1; margin-bottom: 0;">
+        <button onclick="handleSearch(document.getElementById('search-bar').value)" style="background: var(--accent-gold); color: #000; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap;">Search</button>
     </div>
 
 
