@@ -224,8 +224,8 @@
 <div class="container app-view" id="dashboard-view">
     <!-- Search Toolbar with Embedded Button -->
     <div class="search-toolbar">
-        <input type="text" id="search-bar" class="search-input" placeholder="Search stories or artists (e.g. Burna Boy)..." oninput="handleSearch(this.value)">
-        <button class="search-btn" onclick="handleSearch(document.getElementById('search-bar').value)">Search</button>
+        <input type="text" id="search-bar" class="search-input" placeholder="Search stories or artists (e.g. Burna Boy)..." oninput="handleSearch(this.value)" onkeydown="if(event.key === 'Enter'){ triggerSearch(); }">
+        <button class="search-btn" type="button" onclick="triggerSearch()">Search</button>
     </div>
 
     <!-- Elites Welcome Banner -->
@@ -531,6 +531,11 @@ function filterCategory(cat, el) {
 function handleSearch(query) {
     searchQuery = query.toLowerCase().trim();
     renderFeed();
+}
+
+function triggerSearch() {
+    const inputVal = document.getElementById('search-bar').value;
+    handleSearch(inputVal);
 }
 
 function renderFeed() {
