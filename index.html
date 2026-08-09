@@ -450,16 +450,18 @@ function handleGoogleSignIn() {
     firebase.auth().signInWithRedirect(provider);
 }
 
-// Add this line right below it to catch the sign-in when Google brings you back:
+// Check for redirect result when the page loads
 firebase.auth().getRedirectResult().then((result) => {
-    if (result.user) {
+    if (result && result.user) {
         const user = result.user;
         currentUserDisplayName = user.displayName || user.email.split('@')[0];
         updateAuthUI(currentUserDisplayName);
+        alert("Successfully signed in as " + currentUserDisplayName);
     }
 }).catch((error) => {
-    console.error("Sign-in error:", error);
+    alert("Sign-in error: " + error.message);
 });
+
 
 
 
