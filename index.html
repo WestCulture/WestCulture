@@ -52,12 +52,10 @@
         .notification-badge { position: absolute; top: -4px; right: -4px; background: red; color: white; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 10px; display: none; }
         .btn-signin { background: var(--accent-gold); color: #000; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; }
 
-             <!-- Search Toolbar -->
-    <div style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; margin-bottom: 16px; display: flex; gap: 8px;">
-        <input type="text" id="search-bar" placeholder="Search stories or artists..." oninput="handleSearch(this.value)" style="flex: 1; background: #000; border: 1px solid var(--border-color); padding: 10px; border-radius: 6px; color: #fff; outline: none;">
-        <button type="button" onclick="handleSearch(document.getElementById('search-bar').value)" style="background: var(--accent-gold); color: #000; border: none; padding: 0 16px; border-radius: 6px; font-weight: 800; cursor: pointer;">Search</button>
-    </div>
-
+        /* Search & Filter Toolbar */
+        .search-toolbar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+        .search-input { flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 8px; color: #fff; font-size: 13px; outline: none; backdrop-filter: blur(10px); }
+        .search-btn { background: var(--accent-gold); color: #000; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
 
         /* Welcome Banner */
         .welcome-banner { background: linear-gradient(135deg, rgba(22, 22, 22, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-left: 3px solid var(--accent-gold); padding: 16px; border-radius: 8px; margin-bottom: 20px; }
@@ -224,9 +222,10 @@
 
 <!-- Main Dashboard & News Feed View -->
 <div class="container app-view" id="dashboard-view">
-    <!-- Search Toolbar -->
+    <!-- Search Toolbar with Embedded Button -->
     <div class="search-toolbar">
         <input type="text" id="search-bar" class="search-input" placeholder="Search stories or artists (e.g. Burna Boy)..." oninput="handleSearch(this.value)">
+        <button class="search-btn" onclick="handleSearch(document.getElementById('search-bar').value)">Search</button>
     </div>
 
     <!-- Elites Welcome Banner -->
@@ -865,7 +864,7 @@ function saveNewArticle() {
         imageUrl: publisherImageBase64,
         snippet,
         content: content.replace(/\n/g, '<br>'),
-        author: currentUsername, // Automatically uses the signed-in user's name or 'Guest User'
+        author: currentUsername,
         likes: 0,
         comments: []
     };
@@ -884,7 +883,6 @@ function saveNewArticle() {
     closePublisher();
 }
 
-// Automatically load feed and rank on page entry
 renderFeed();
 updateLeaderboard();
 </script>
