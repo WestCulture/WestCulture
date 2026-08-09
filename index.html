@@ -447,20 +447,30 @@ function handleGoogleSignIn() {
 
 function handleGoogleSignIn() {
     const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithRedirect(provider);
+    
+    // Force persistence so mobile storage keeps the session
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+            return firebase.auth().signInWithPopup(provider);
+        })
+        .then((result) => {
+            const user = result.user;
+            currentUserDisplayName = user.displayName || user.email.split('@')[0];
+            updateAuthUI(currentUserDisplayName);
+        })
+        .catch((error) => {
+            alert("Sign-in error: " + error.message);
+        });
 }
 
-// Check for redirect result when the page loads
-firebase.auth().getRedirectResult().then((result) => {
-    if (result && result.user) {
-        const user = result.user;
+// Keep persistent listener active across page states
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
         currentUserDisplayName = user.displayName || user.email.split('@')[0];
         updateAuthUI(currentUserDisplayName);
-        alert("Successfully signed in as " + currentUserDisplayName);
     }
-}).catch((error) => {
-    alert("Sign-in error: " + error.message);
 });
+
 
 
 
