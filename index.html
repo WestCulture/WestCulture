@@ -52,9 +52,12 @@
         .notification-badge { position: absolute; top: -4px; right: -4px; background: red; color: white; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 10px; display: none; }
         .btn-signin { background: var(--accent-gold); color: #000; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; }
 
-        /* Search & Filter Toolbar */
-        .search-toolbar { display: flex; gap: 8px; margin-bottom: 16px; }
-        .search-input { flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 8px; color: #fff; font-size: 13px; outline: none; backdrop-filter: blur(10px); }
+     <!-- Search Toolbar -->
+    <div class="search-toolbar" style="display: flex; gap: 8px;">
+        <input type="text" id="search-bar" class="search-input" placeholder="Search stories or artists (e.g. Burna Boy)..." oninput="handleSearch(this.value)" style="flex: 1;">
+        <button onclick="handleSearch(document.getElementById('search-bar').value)" class="btn-signin" style="padding: 10px 16px; white-space: nowrap;">Search</button>
+    </div>
+
 
         /* Welcome Banner */
         .welcome-banner { background: linear-gradient(135deg, rgba(22, 22, 22, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-left: 3px solid var(--accent-gold); padding: 16px; border-radius: 8px; margin-bottom: 20px; }
