@@ -222,7 +222,7 @@
 
 <!-- Main Dashboard & News Feed View -->
 <div class="container app-view" id="dashboard-view">
-    <!-- Search Toolbar with Embedded Button -->
+    <!-- Search Toolbar -->
     <div class="search-toolbar">
         <input type="text" id="search-bar" class="search-input" placeholder="Search stories or artists (e.g. Burna Boy)..." oninput="handleSearch(this.value)" onkeydown="if(event.key === 'Enter'){ triggerSearch(); }">
         <button class="search-btn" type="button" onclick="triggerSearch()">Search</button>
@@ -546,11 +546,12 @@ function renderFeed() {
     let filtered = currentFilter === 'All Feed' ? list : list.filter(a => a.category === currentFilter);
 
     if (searchQuery) {
-        filtered = filtered.filter(a => 
-            a.title.toLowerCase().includes(searchQuery) || 
-            (a.artist && a.artist.toLowerCase().includes(searchQuery)) ||
-            a.snippet.toLowerCase().includes(searchQuery)
-        );
+        filtered = filtered.filter(a => {
+            const titleMatch = a.title && a.title.toLowerCase().includes(searchQuery);
+            const artistMatch = a.artist && a.artist.toLowerCase().includes(searchQuery);
+            const snippetMatch = a.snippet && a.snippet.toLowerCase().includes(searchQuery);
+            return titleMatch || artistMatch || snippetMatch;
+        });
     }
 
     if (filtered.length === 0) {
