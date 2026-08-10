@@ -34,7 +34,7 @@
             min-height: 100vh; 
             display: flex; 
             flex-direction: column; 
-            padding-bottom: 80px; 
+            padding-bottom: 90px; 
         }
 
         .container { max-width: 560px; width: 100%; margin: 0 auto; padding: 0 16px; }
@@ -48,7 +48,7 @@
             cursor: pointer; 
             display: inline-flex; 
             align-items: baseline; 
-            letter-spacing: -0.8px; /* Tightly draws all characters together */
+            letter-spacing: -0.8px;
         }
 
         .brand-w {
@@ -58,7 +58,7 @@
             color: #ffffff;
             font-size: 1.25em; 
             transform: translateY(1.5px); 
-            margin-right: -1px; /* Overlaps slightly to key seamlessly with 'e' */
+            margin-right: -1px; 
             letter-spacing: 0;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9), 0 0 10px rgba(255, 255, 255, 0.4);
         }
@@ -76,6 +76,12 @@
         .notification-badge { position: absolute; top: -4px; right: -4px; background: red; color: white; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 10px; display: none; }
         .btn-signin { background: var(--accent-gold); color: #000; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; }
 
+        /* Bottom Tab Navigation Bar */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10, 10, 10, 0.95); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 150; backdrop-filter: blur(10px); }
+        .bottom-nav-item { background: none; border: none; color: var(--text-secondary); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .bottom-nav-item.active { color: var(--accent-gold); }
+        .bottom-nav-item svg { width: 20px; height: 20px; fill: currentColor; }
+
         /* Search & Filter Toolbar */
         .search-toolbar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
         .search-input { flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 8px; color: #fff; font-size: 13px; outline: none; backdrop-filter: blur(10px); }
@@ -91,34 +97,23 @@
         .sidebar { position: fixed; top: 0; left: -320px; width: 320px; height: 100%; background: #0a0a0a; z-index: 301; transition: left 0.3s ease; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; overflow-y: auto; }
         .sidebar.open { left: 0; }
         .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #000; }
-        
-        .sidebar-brand { 
-            font-size: 20px; 
-            font-weight: 800; 
-            color: #fff; 
-            display: inline-flex; 
-            align-items: baseline; 
-            letter-spacing: -0.8px;
-        }
+        .sidebar-brand { font-size: 20px; font-weight: 800; color: #fff; display: inline-flex; align-items: baseline; letter-spacing: -0.8px; }
         .sidebar-brand span:not(.brand-w) { color: var(--accent-gold); }
-
         .sidebar-close { background: none; border: none; color: var(--text-secondary); font-size: 20px; cursor: pointer; }
-        
         .sidebar-grid { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--border-color); }
         .sidebar-column { padding: 16px; border-right: 1px solid var(--border-color); }
         .sidebar-column:last-child { border-right: none; }
         .sidebar-col-title { font-size: 10px; text-transform: uppercase; color: var(--accent-gold); font-weight: 700; margin-bottom: 12px; letter-spacing: 1.5px; }
         .sidebar-link { display: block; color: var(--text-secondary); font-size: 13px; font-weight: 500; text-decoration: none; margin-bottom: 12px; cursor: pointer; }
         .sidebar-link:hover { color: var(--text-primary); }
-
         .sidebar-footer-links { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; flex-wrap: wrap; gap: 12px; }
         .sidebar-footer-links a { color: var(--text-secondary); font-size: 11px; text-decoration: none; cursor: pointer; }
-        .sidebar-footer-links a:hover { color: var(--accent-gold); }
         .sidebar-copyright { padding: 20px; font-size: 10px; color: var(--text-secondary); line-height: 1.5; }
 
-        /* Dashboard Feed View */
-        .app-view { display: block; }
-        
+        /* Views */
+        .app-view { display: none; }
+        .app-view.active { display: block; }
+
         /* Leaderboard */
         .radar-card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; margin-bottom: 20px; }
         .radar-title { font-size: 11px; font-weight: 700; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; }
@@ -144,7 +139,7 @@
         .card-snippet { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
 
         /* Engagement Bar */
-        .engagement-bar { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-color); padding: 12px 18px; background: rgba(255,255,255,0.01); }
+        .engagement-bar { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-color); padding: 12px 18px; background: rgba(255,255,255,0.01); position: relative; z-index: 5; }
         .action-group { display: flex; gap: 16px; align-items: center; }
         .action-btn { background: none; border: none; color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
         .action-btn svg { width: 16px; height: 16px; fill: currentColor; }
@@ -153,15 +148,13 @@
         .action-btn.bookmarked svg { fill: var(--accent-gold); }
 
         /* Floating Action Button */
-        .fab-btn { position: fixed; bottom: 24px; right: 20px; background: var(--accent-gold); color: #000; border: none; padding: 14px 20px; border-radius: 30px; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,0.5); z-index: 90; }
+        .fab-btn { position: fixed; bottom: 75px; right: 20px; background: var(--accent-gold); color: #000; border: none; padding: 14px 20px; border-radius: 30px; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,0.5); z-index: 140; }
 
         /* Modals */
-        .modal-screen { display: none; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(15px); position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 100; padding: 20px; overflow-y: auto; }
+        .modal-screen { display: none; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(15px); position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 200; padding: 20px; overflow-y: auto; }
         
-        #reader-modal { z-index: 100; }
-        #reader-modal .container { max-width: 720px; }
-        #user-profile-modal { z-index: 250; } 
-        #user-profile-modal .container { max-width: 720px; }
+        #reader-modal { z-index: 210; }
+        #reader-modal .container { max-width: 720px; padding-bottom: 100px; }
         
         .btn-back { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-bottom: 20px; cursor: pointer; }
         
@@ -172,7 +165,7 @@
         .tiktok-comment-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(47, 51, 54, 0.4); position: relative; }
         .tiktok-comment-item:last-child { border-bottom: none; }
         
-        .tiktok-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-gold), #b8970f); color: #000; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+        .tiktok-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-gold), #b8970f); color: #000; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; overflow: hidden; background-size: cover; background-position: center; }
         .tiktok-comment-body { flex: 1; min-width: 0; padding-right: 36px; }
         
         .tiktok-username { font-size: 12px; color: var(--text-secondary); font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; cursor: pointer; }
@@ -181,13 +174,13 @@
         .tiktok-text { font-size: 14px; color: var(--text-primary); line-height: 1.5; word-break: break-word; margin-bottom: 6px; }
         .tiktok-img { width: 100%; max-width: 220px; border-radius: 8px; margin-top: 6px; display: block; border: 1px solid var(--border-color); }
         
-        .tiktok-meta-row { display: flex; align-items: center; gap: 16px; font-size: 11px; color: var(--text-secondary); margin-top: 6px; }
-        .tiktok-reply-btn { background: none; border: none; color: var(--text-secondary); font-weight: 600; cursor: pointer; font-size: 11px; }
+        .tiktok-meta-row { display: flex; align-items: center; gap: 16px; font-size: 11px; color: var(--text-secondary); margin-top: 6px; position: relative; z-index: 10; }
+        .tiktok-reply-btn { background: none; border: none; color: var(--text-secondary); font-weight: 600; cursor: pointer; font-size: 11px; z-index: 12; position: relative; padding: 4px 0; }
         .tiktok-reply-btn:hover { color: var(--text-primary); }
 
-        .delete-action-text { color: var(--accent-gold); cursor: pointer; font-size: 10px; font-weight: 600; }
+        .delete-action-text { color: var(--accent-gold); cursor: pointer; font-size: 10px; font-weight: 600; z-index: 12; position: relative; }
 
-        .tiktok-like-box { position: absolute; right: 0; top: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; cursor: pointer; padding: 4px; }
+        .tiktok-like-box { position: absolute; right: 0; top: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; cursor: pointer; padding: 4px; z-index: 12; }
         .tiktok-like-box svg { width: 18px; height: 18px; fill: var(--text-secondary); transition: fill 0.2s ease; }
         .tiktok-like-box.liked svg { fill: var(--accent-gold); }
         .tiktok-like-count { font-size: 10px; color: var(--text-secondary); }
@@ -195,7 +188,7 @@
         .tiktok-replies-container { margin-top: 10px; padding-left: 20px; border-left: 2px solid var(--border-color); background: rgba(0,0,0,0.3); border-radius: 0 8px 8px 0; padding-top: 4px; padding-bottom: 4px; }
 
         /* Fixed Bottom Comment Input Bar */
-        .tiktok-input-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10, 10, 10, 0.98); border-top: 1px solid var(--border-color); padding: 12px 16px; display: flex; align-items: center; justify-content: center; z-index: 120; backdrop-filter: blur(10px); }
+        .tiktok-input-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10, 10, 10, 0.98); border-top: 1px solid var(--border-color); padding: 12px 16px; display: flex; align-items: center; justify-content: center; z-index: 250; backdrop-filter: blur(10px); }
         .tiktok-input-inner { max-width: 720px; width: 100%; margin: 0 auto; display: flex; align-items: center; gap: 10px; }
         .tiktok-input { flex: 1; background: #161616; border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 16px; color: #fff; font-size: 13px; outline: none; }
         .tiktok-input::placeholder { color: var(--text-secondary); }
@@ -203,7 +196,7 @@
 
         /* Profile View Styling */
         .profile-header { background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; backdrop-filter: blur(10px); }
-        .profile-avatar { width: 64px; height: 64px; background: var(--accent-gold); color: #000; font-weight: 800; font-size: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; }
+        .profile-avatar { width: 64px; height: 64px; background: var(--accent-gold); color: #000; font-weight: 800; font-size: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; background-size: cover; background-position: center; overflow: hidden; }
         .profile-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
         .profile-tab { background: none; border: none; color: var(--text-secondary); font-size: 13px; font-weight: 700; cursor: pointer; padding: 6px 12px; border-radius: 6px; }
         .profile-tab.active { background: var(--bg-elevated); color: var(--accent-gold); border: 1px solid var(--border-color); }
@@ -232,16 +225,17 @@
     <div class="sidebar-grid">
         <div class="sidebar-column">
             <div class="sidebar-col-title">Navigation</div>
-            <a class="sidebar-link" onclick="toggleSidebar(); filterCategory('All Feed', document.querySelector('.cat-chip'))">Home Feed</a>
-            <a class="sidebar-link" onclick="toggleSidebar(); openProfileView()">My Profile & Bookmarks</a>
+            <a class="sidebar-link" onclick="toggleSidebar(); switchTab('feed')">Home Feed</a>
+            <a class="sidebar-link" onclick="toggleSidebar(); switchTab('search')">Search Explorer</a>
+            <a class="sidebar-link" onclick="toggleSidebar(); switchTab('profile')">My Profile & Bookmarks</a>
             <a class="sidebar-link" onclick="toggleSidebar(); openPublisher()">Publish Post</a>
             <a class="sidebar-link" onclick="openSettingsModal()">Settings</a>
         </div>
         <div class="sidebar-column">
             <div class="sidebar-col-title">Categories</div>
-            <a class="sidebar-link" onclick="toggleSidebar(); filterCategory('Celeb Gossip')">Celeb Gossip</a>
-            <a class="sidebar-link" onclick="toggleSidebar(); filterCategory('Music & Drops')">Music & Drops</a>
-            <a class="sidebar-link" onclick="toggleSidebar(); filterCategory('Viral Trends')">Viral Trends</a>
+            <a class="sidebar-link" onclick="toggleSidebar(); switchTab('feed'); filterCategory('Celeb Gossip')">Celeb Gossip</a>
+            <a class="sidebar-link" onclick="toggleSidebar(); switchTab('feed'); filterCategory('Music & Drops')">Music & Drops</a>
+            <a class="sidebar-link" onclick="toggleSidebar(); switchTab('feed'); filterCategory('Viral Trends')">Viral Trends</a>
         </div>
     </div>
     <div class="sidebar-footer-links">
@@ -263,7 +257,7 @@
                 <span></span>
                 <span></span>
             </button>
-            <a class="brand-logo" onclick="filterCategory('All Feed', document.querySelector('.cat-chip'))"><span class="brand-w">W</span>est<span>Pulse</span></a>
+            <a class="brand-logo" onclick="switchTab('feed')"><span class="brand-w">W</span>est<span>Pulse</span></a>
         </div>
         <div class="nav-right-actions">
             <div style="position: relative;">
@@ -280,13 +274,24 @@
     </nav>
 </div>
 
-<!-- Main Dashboard & News Feed View -->
-<div class="container app-view" id="dashboard-view">
-    <div class="search-toolbar">
-        <input type="text" id="search-bar" class="search-input" placeholder="Search stories or artists (e.g. Burna Boy)..." oninput="handleSearch(this.value)" onkeydown="if(event.key === 'Enter'){ triggerSearch(); }">
-        <button class="search-btn" type="button" onclick="triggerSearch()">Search</button>
-    </div>
+<!-- Bottom Navigation Bar -->
+<div class="bottom-nav">
+    <button class="bottom-nav-item active" id="nav-btn-feed" onclick="switchTab('feed')">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        Feed
+    </button>
+    <button class="bottom-nav-item" id="nav-btn-search" onclick="switchTab('search')">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        Search
+    </button>
+    <button class="bottom-nav-item" id="nav-btn-profile" onclick="switchTab('profile')">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        Profile
+    </button>
+</div>
 
+<!-- View 1: Main Dashboard & News Feed -->
+<div class="container app-view active" id="feed-view">
     <div class="welcome-banner">
         <div class="welcome-title">Welcome to the Inner Circle</div>
         <div class="welcome-desc">You've arrived at WestPulse—the definitive nexus for elite pop culture intelligence, unedited celebrity gossip, and premier music drops. Stay sharp, stay informed.</div>
@@ -307,26 +312,62 @@
     <div id="article-feed"></div>
 </div>
 
-<!-- Profile View Modal (My Profile) -->
-<div class="modal-screen" id="profile-modal">
+<!-- View 2: Search Explorer Tab -->
+<div class="container app-view" id="search-view">
+    <div class="search-toolbar">
+        <input type="text" id="search-bar" class="search-input" placeholder="Search stories, artists, or topics..." oninput="handleSearch(this.value)">
+    </div>
+
+    <div class="categories" style="margin-bottom: 24px;">
+        <div class="cat-chip active" onclick="filterSearchCategory('All', this)">All</div>
+        <div class="cat-chip" onclick="filterSearchCategory('Trending', this)">Trending</div>
+        <div class="cat-chip" onclick="filterSearchCategory('Sport', this)">Sport</div>
+        <div class="cat-chip" onclick="filterSearchCategory('Entertainment', this)">Entertainment</div>
+    </div>
+
+    <div id="search-results-feed"></div>
+</div>
+
+<!-- View 3: Profile View Tab -->
+<div class="container app-view" id="profile-view">
+    <div class="profile-header">
+        <div class="profile-avatar" id="profile-initial">G</div>
+        <h2 id="profile-name" style="font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 4px;">Guest User</h2>
+        <p id="profile-bio" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">WestPulse Elite Contributor</p>
+        <button class="btn-signin" style="background:var(--bg-elevated); border:1px solid var(--border-color); color:var(--text-primary); font-size:11px;" onclick="openEditProfileModal()">Edit Profile</button>
+    </div>
+
+    <div class="profile-tabs">
+        <button class="profile-tab active" onclick="switchProfileTab('published', this)">My Published Stories</button>
+        <button class="profile-tab" onclick="switchProfileTab('bookmarks', this)">Bookmarked Articles</button>
+    </div>
+
+    <div id="profile-content-area"></div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal-screen" id="edit-profile-modal">
     <div class="container">
-        <button class="btn-back" onclick="closeProfileView()">← Back to Feed</button>
-        <div class="profile-header">
-            <div class="profile-avatar" id="profile-initial">G</div>
-            <h2 id="profile-name" style="font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 4px;">Guest User</h2>
-            <p style="font-size: 12px; color: var(--text-secondary);">WestPulse Elite Contributor</p>
+        <button class="btn-back" onclick="closeEditProfileModal()">← Cancel</button>
+        <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 20px; color: var(--accent-gold);">Edit Profile</h2>
+        
+        <div class="form-group">
+            <label>Display Name</label>
+            <input type="text" id="edit-name-input" placeholder="Your display name...">
         </div>
-
-        <div class="profile-tabs">
-            <button class="profile-tab active" onclick="switchProfileTab('published', this)">My Published Stories</button>
-            <button class="profile-tab" onclick="switchProfileTab('bookmarks', this)">Bookmarked Articles</button>
+        <div class="form-group">
+            <label>Bio / Description</label>
+            <input type="text" id="edit-bio-input" placeholder="Tell us about yourself...">
         </div>
-
-        <div id="profile-content-area"></div>
+        <div class="form-group">
+            <label>Profile Picture</label>
+            <input type="file" id="edit-avatar-file" accept="image/*">
+        </div>
+        <button class="btn-primary-action" onclick="saveProfileChanges()">Save Changes</button>
     </div>
 </div>
 
-<!-- Public User Profile Modal (When clicking a commenter or author) -->
+<!-- Public User Profile Modal -->
 <div class="modal-screen" id="user-profile-modal">
     <div class="container">
         <button class="btn-back" id="up-back-btn" onclick="closeUserProfileModal()">← Back</button>
@@ -343,7 +384,7 @@
 <button class="fab-btn" onclick="openPublisher()">+ Publish</button>
 
 <!-- Article Reader & Comments Modal -->
-<div class="modal-screen" id="reader-modal" style="padding-bottom: 90px;">
+<div class="modal-screen" id="reader-modal">
     <div class="container">
         <button class="btn-back" onclick="closeArticleReader()">← Back</button>
         <div id="reader-body"></div>
@@ -362,7 +403,7 @@
             <button onclick="submitMainComment()" class="tiktok-send-btn">Post</button>
         </div>
     </div>
-    <div id="comment-img-preview-container" style="display: none; position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: #000; padding: 4px; border: 1px solid var(--border-color); border-radius: 8px; z-index: 130;">
+    <div id="comment-img-preview-container" style="display: none; position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: #000; padding: 4px; border: 1px solid var(--border-color); border-radius: 8px; z-index: 260;">
         <img id="comment-img-preview" style="max-height: 40px; border-radius: 4px;">
         <span onclick="clearCommentImage()" style="cursor: pointer; color: #ff0000; font-size: 12px; margin-left: 6px;">✕</span>
     </div>
@@ -388,6 +429,8 @@
                 <option value="Celeb Gossip">Celeb Gossip</option>
                 <option value="Music & Drops">Music & Drops</option>
                 <option value="Viral Trends">Viral Trends</option>
+                <option value="Sport">Sport</option>
+                <option value="Entertainment">Entertainment</option>
             </select>
         </div>
         <div class="form-group">
@@ -424,14 +467,6 @@
             <select id="setting-notifications">
                 <option value="enabled">Enabled (All Activity)</option>
                 <option value="muted">Muted</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Default Content Feed View</label>
-            <select id="setting-default-feed">
-                <option value="All Feed">All Feed</option>
-                <option value="Celeb Gossip">Celeb Gossip Only</option>
-                <option value="Music & Drops">Music & Drops Only</option>
             </select>
         </div>
         <button class="btn-primary-action" onclick="saveSettings()">Save Preferences</button>
@@ -475,78 +510,73 @@ let defaultArticles = [
 ];
 
 let currentFilter = 'All Feed';
+let searchCategoryFilter = 'All';
 let searchQuery = '';
 let activeArticleId = null;
 let currentUsername = 'Guest User';
+let currentUserBio = 'WestPulse Elite Contributor';
+let currentUserAvatar = '';
 let publisherImageBase64 = '';
 let commentImageBase64 = '';
+let editAvatarBase64 = '';
 let replyingToCommentId = null;
 let notifications = [];
 let bookmarks = [];
 let likedArticles = [];
 let activeProfileTab = 'published';
 let cameFromArticleReader = false; 
-let settingsCallerModal = null; 
 let wasSidebarOpenBeforeSettings = false; 
 
 const infoContent = {
     terms: `
         <h2 style="color: var(--accent-gold); font-size: 22px; margin-bottom: 16px;">Terms of Service</h2>
         <p>Welcome to WestPulse. By accessing or using our platform, you agree to be bound by these Terms of Service. Please read them carefully.</p>
-        <p style="margin-top: 12px;">1. <strong>Content Guidelines:</strong> Users are responsible for all published content, comments, and media uploads. Offensive or violating material will be removed.</p>
-        <p style="margin-top: 12px;">2. <strong>Account Security:</strong> You are responsible for maintaining the security of your account and any activities under your sign-in credentials.</p>
     `,
     privacy: `
         <h2 style="color: var(--accent-gold); font-size: 22px; margin-bottom: 16px;">Privacy Policy</h2>
-        <p>At WestPulse, we respect your privacy. This policy outlines how we collect, use, and protect your personal data when you interact with our platform.</p>
-        <p style="margin-top: 12px;">1. <strong>Data Collection:</strong> We collect information provided directly through account authentication and user-generated posts or comments.</p>
-        <p style="margin-top: 12px;">2. <strong>Data Usage:</strong> Your data is used exclusively to maintain your profile, display your activity, and power the live ranking algorithms.</p>
+        <p>At WestPulse, we respect your privacy. This policy outlines how we collect, use, and protect your data.</p>
     `,
     help: `
         <h2 style="color: var(--accent-gold); font-size: 22px; margin-bottom: 16px;">Help & Support</h2>
-        <p>Need assistance navigating WestPulse or managing your posts? We're here to help.</p>
-        <p style="margin-top: 12px;"><strong>Publishing Stories:</strong> Tap the '+ Publish' button floating on the feed, fill in your headline, category, and optional banner image, then share it directly to the community.</p>
-        <p style="margin-top: 12px;"><strong>Live Ranks:</strong> Leaderboard scores update dynamically based on user engagement, likes, and discussion comments.</p>
+        <p>Need assistance navigating WestPulse? Tap the '+ Publish' button to share stories or use the Search tab to explore topics.</p>
     `
 };
 
 function openInfo(type) {
-    const content = infoContent[type] || '<p>Content not available.</p>';
-    document.getElementById('info-modal-content').innerHTML = content;
+    document.getElementById('info-modal-content').innerHTML = infoContent[type] || '<p>Content not available.</p>';
     document.getElementById('info-modal').style.display = 'block';
 }
-
 function closeInfoModal() { document.getElementById('info-modal').style.display = 'none'; }
+
+function switchTab(tabName) {
+    document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.bottom-nav-item').forEach(i => i.classList.remove('active'));
+
+    if (tabName === 'feed') {
+        document.getElementById('feed-view').classList.add('active');
+        document.getElementById('nav-btn-feed').classList.add('active');
+        renderFeed();
+    } else if (tabName === 'search') {
+        document.getElementById('search-view').classList.add('active');
+        document.getElementById('nav-btn-search').classList.add('active');
+        renderSearchFeed();
+    } else if (tabName === 'profile') {
+        document.getElementById('profile-view').classList.add('active');
+        document.getElementById('nav-btn-profile').classList.add('active');
+        loadUserData();
+        renderProfileContent();
+    }
+}
 
 function openSettingsModal() { 
     const sidebar = document.getElementById('sidebar');
     wasSidebarOpenBeforeSettings = sidebar.classList.contains('open');
-    if (wasSidebarOpenBeforeSettings) {
-        toggleSidebar(); 
-    }
-
-    if (document.getElementById('profile-modal').style.display === 'block') {
-        settingsCallerModal = 'profile-modal';
-        document.getElementById('profile-modal').style.display = 'none';
-    } else {
-        settingsCallerModal = null;
-    }
+    if (wasSidebarOpenBeforeSettings) toggleSidebar(); 
     document.getElementById('settings-modal').style.display = 'block'; 
 }
-
 function closeSettingsModal() { 
     document.getElementById('settings-modal').style.display = 'none';
-    
-    if (wasSidebarOpenBeforeSettings) {
-        toggleSidebar();
-        wasSidebarOpenBeforeSettings = false;
-        return;
-    }
-
-    if (settingsCallerModal === 'profile-modal') {
-        document.getElementById('profile-modal').style.display = 'block';
-        settingsCallerModal = null;
-    }
+    if (wasSidebarOpenBeforeSettings) { toggleSidebar(); wasSidebarOpenBeforeSettings = false; }
 }
 
 function updateSettingsTheme(val) {
@@ -559,16 +589,7 @@ function updateSettingsTheme(val) {
         root.style.setProperty('--bg-elevated', 'rgba(22, 22, 22, 0.9)');
     }
 }
-
-function saveSettings() {
-    const theme = document.getElementById('setting-theme').value;
-    const notif = document.getElementById('setting-notifications').value;
-    const feed = document.getElementById('setting-default-feed').value;
-    
-    localStorage.setItem('westpulse_settings', JSON.stringify({ theme, notif, feed }));
-    alert('Settings saved successfully!');
-    closeSettingsModal();
-}
+function saveSettings() { alert('Settings saved successfully!'); closeSettingsModal(); }
 
 function toggleSidebar() {
     const sb = document.getElementById('sidebar');
@@ -582,12 +603,24 @@ function handleGoogleSignIn() {
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(provider).then((result) => {
         currentUsername = result.user.displayName || 'User';
-        const initial = currentUsername.charAt(0).toUpperCase();
+        currentUserAvatar = result.user.photoURL || '';
         document.getElementById('auth-btn').innerText = '✓ ' + currentUsername;
-        document.getElementById('profile-name').innerText = currentUsername;
-        document.getElementById('profile-initial').innerText = initial;
+        updateProfileDisplay();
         loadUserData();
     }).catch(err => alert(err.message));
+}
+
+function updateProfileDisplay() {
+    document.getElementById('profile-name').innerText = currentUsername;
+    document.getElementById('profile-bio').innerText = currentUserBio;
+    const initialEl = document.getElementById('profile-initial');
+    if (currentUserAvatar) {
+        initialEl.style.backgroundImage = `url('${currentUserAvatar}')`;
+        initialEl.innerText = '';
+    } else {
+        initialEl.style.backgroundImage = 'none';
+        initialEl.innerText = currentUsername.charAt(0).toUpperCase();
+    }
 }
 
 document.getElementById('p-file').addEventListener('change', function(e) {
@@ -598,6 +631,35 @@ document.getElementById('p-file').addEventListener('change', function(e) {
         reader.readAsDataURL(file);
     }
 });
+
+document.getElementById('edit-avatar-file').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => { editAvatarBase64 = ev.target.result; };
+        reader.readAsDataURL(file);
+    }
+});
+
+function openEditProfileModal() {
+    document.getElementById('edit-name-input').value = currentUsername;
+    document.getElementById('edit-bio-input').value = currentUserBio;
+    editAvatarBase64 = currentUserAvatar;
+    document.getElementById('edit-profile-modal').style.display = 'block';
+}
+function closeEditProfileModal() { document.getElementById('edit-profile-modal').style.display = 'none'; }
+
+function saveProfileChanges() {
+    const newName = document.getElementById('edit-name-input').value.trim();
+    const newBio = document.getElementById('edit-bio-input').value.trim();
+    if (newName) currentUsername = newName;
+    if (newBio) currentUserBio = newBio;
+    if (editAvatarBase64) currentUserAvatar = editAvatarBase64;
+
+    updateProfileDisplay();
+    closeEditProfileModal();
+    alert('Profile updated successfully!');
+}
 
 function previewCommentImage(input) {
     const file = input.files[0];
@@ -619,24 +681,24 @@ function clearCommentImage() {
 }
 
 function getArticles() {
-    let stored = localStorage.getItem('westpulse_articles_gold_v1');
+    let stored = localStorage.getItem('westpulse_articles_gold_v2');
     if (!stored) {
-        localStorage.setItem('westpulse_articles_gold_v1', JSON.stringify(defaultArticles));
+        localStorage.setItem('westpulse_articles_gold_v2', JSON.stringify(defaultArticles));
         return defaultArticles;
     }
     return JSON.parse(stored);
 }
 
 function saveArticles(list) {
-    localStorage.setItem('westpulse_articles_gold_v1', JSON.stringify(list));
+    localStorage.setItem('westpulse_articles_gold_v2', JSON.stringify(list));
     renderFeed();
+    renderSearchFeed();
     updateLeaderboard();
 }
 
 function loadUserData() {
     let bStored = localStorage.getItem('westpulse_bookmarks_' + currentUsername);
     bookmarks = bStored ? JSON.parse(bStored) : [];
-
     let lStored = localStorage.getItem('westpulse_likes_' + currentUsername);
     likedArticles = lStored ? JSON.parse(lStored) : [];
 }
@@ -647,15 +709,13 @@ function saveUserData() {
 }
 
 function toggleBookmark(id, event) {
-    event.stopPropagation();
+    if (event) event.stopPropagation();
     const index = bookmarks.indexOf(id);
-    if (index > -1) {
-        bookmarks.splice(index, 1);
-    } else {
-        bookmarks.push(id);
-    }
+    if (index > -1) bookmarks.splice(index, 1);
+    else bookmarks.push(id);
     saveUserData();
     renderFeed();
+    renderSearchFeed();
 }
 
 function toggleLike(id, event) {
@@ -689,6 +749,7 @@ function updateLeaderboard() {
 
     const sorted = Object.keys(scores).sort((a,b) => scores[b] - scores[a]).slice(0, 3);
     const radar = document.getElementById('radar-list');
+    if (!radar) return;
     radar.innerHTML = '';
     sorted.forEach((artist, idx) => {
         radar.innerHTML += `
@@ -706,38 +767,32 @@ function updateLeaderboard() {
 
 function filterCategory(cat, el) {
     if (el) {
-        document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.categories .cat-chip').forEach(c => c.classList.remove('active'));
         el.classList.add('active');
     }
     currentFilter = cat;
     renderFeed();
 }
 
-function handleSearch(query) {
-    searchQuery = query.toLowerCase().trim();
-    renderFeed();
+function filterSearchCategory(cat, el) {
+    document.querySelectorAll('#search-view .cat-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    searchCategoryFilter = cat;
+    renderSearchFeed();
 }
 
-function triggerSearch() {
-    const inputVal = document.getElementById('search-bar').value;
-    handleSearch(inputVal);
+function handleSearch(query) {
+    searchQuery = query.toLowerCase().trim();
+    renderSearchFeed();
 }
 
 function renderFeed() {
     const list = getArticles();
     const feed = document.getElementById('article-feed');
+    if (!feed) return;
     feed.innerHTML = '';
 
     let filtered = currentFilter === 'All Feed' ? list : list.filter(a => a.category === currentFilter);
-
-    if (searchQuery) {
-        filtered = filtered.filter(a => {
-            const titleMatch = a.title && a.title.toLowerCase().includes(searchQuery);
-            const artistMatch = a.artist && a.artist.toLowerCase().includes(searchQuery);
-            const snippetMatch = a.snippet && a.snippet.toLowerCase().includes(searchQuery);
-            return titleMatch || artistMatch || snippetMatch;
-        });
-    }
 
     if (filtered.length === 0) {
         feed.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">No stories found.</div>';
@@ -745,46 +800,79 @@ function renderFeed() {
     }
 
     filtered.forEach(art => {
-        let banner = art.imageUrl ? `<img src="${art.imageUrl}" class="card-banner">` : '';
-        let isBookmarked = bookmarks.includes(art.id);
-        let isLiked = likedArticles.includes(art.id);
-        let totalComments = art.comments ? art.comments.reduce((acc, c) => acc + 1 + (c.replies ? c.replies.length : 0), 0) : 0;
-        let isAdmin = currentUsername === 'Admin' || currentUsername === art.author;
+        feed.innerHTML += buildCardHTML(art);
+    });
+}
 
-        feed.innerHTML += `
-            <div class="featured-card">
-                ${banner}
-                <div class="card-body" onclick="openArticle('${art.id}')">
-                    <span class="meta-tag">${art.category} • By <span onclick="event.stopPropagation(); openUserProfile('${art.author || 'Guest User'}', false)">${art.author || 'Guest User'}</span></span>
-                    <h2 class="card-title">${art.title}</h2>
-                    <p class="card-snippet">${art.snippet}</p>
+function renderSearchFeed() {
+    const list = getArticles();
+    const feed = document.getElementById('search-results-feed');
+    if (!feed) return;
+    feed.innerHTML = '';
+
+    let filtered = list;
+    if (searchCategoryFilter !== 'All') {
+        filtered = filtered.filter(a => a.category === searchCategoryFilter);
+    }
+
+    if (searchQuery) {
+        filtered = filtered.filter(a => {
+            return (a.title && a.title.toLowerCase().includes(searchQuery)) ||
+                   (a.artist && a.artist.toLowerCase().includes(searchQuery)) ||
+                   (a.snippet && a.snippet.toLowerCase().includes(searchQuery));
+        });
+    }
+
+    if (filtered.length === 0) {
+        feed.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">No search results found.</div>';
+        return;
+    }
+
+    filtered.forEach(art => {
+        feed.innerHTML += buildCardHTML(art);
+    });
+}
+
+function buildCardHTML(art) {
+    let banner = art.imageUrl ? `<img src="${art.imageUrl}" class="card-banner">` : '';
+    let isBookmarked = bookmarks.includes(art.id);
+    let isLiked = likedArticles.includes(art.id);
+    let totalComments = art.comments ? art.comments.reduce((acc, c) => acc + 1 + (c.replies ? c.replies.length : 0), 0) : 0;
+    let isAdmin = currentUsername === 'Admin' || currentUsername === art.author;
+
+    return `
+        <div class="featured-card">
+            ${banner}
+            <div class="card-body" onclick="openArticle('${art.id}')">
+                <span class="meta-tag">${art.category} • By <span onclick="event.stopPropagation(); openUserProfile('${art.author || 'Guest User'}', false)">${art.author || 'Guest User'}</span></span>
+                <h2 class="card-title">${art.title}</h2>
+                <p class="card-snippet">${art.snippet}</p>
+            </div>
+            <div class="engagement-bar">
+                <div class="action-group">
+                    <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${art.id}', event)">
+                        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        <span>${art.likes || 0}</span>
+                    </button>
+                    <button class="action-btn" onclick="openArticle('${art.id}')">
+                        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+                        <span>${totalComments}</span>
+                    </button>
+                    <button class="action-btn ${isBookmarked ? 'bookmarked' : ''}" onclick="toggleBookmark('${art.id}', event)">
+                        <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                        <span>Save</span>
+                    </button>
                 </div>
-                <div class="engagement-bar">
-                    <div class="action-group">
-                        <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${art.id}', event)">
-                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            <span>${art.likes || 0}</span>
-                        </button>
-                        <button class="action-btn" onclick="openArticle('${art.id}')">
-                            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
-                            <span>${totalComments}</span>
-                        </button>
-                        <button class="action-btn ${isBookmarked ? 'bookmarked' : ''}" onclick="toggleBookmark('${art.id}', event)">
-                            <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
-                            <span>Save</span>
-                        </button>
-                    </div>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <button class="action-btn" onclick="shareArticle('${art.id}', event)">
-                            <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
-                            <span>Share</span>
-                        </button>
-                        ${isAdmin ? `<button class="admin-delete-btn" style="background:none; border:none; color:var(--text-secondary); font-size:11px; cursor:pointer;" onclick="deleteArticle('${art.id}', event)">Delete</button>` : ''}
-                    </div>
+                <div style="display: flex; gap: 8px; align-items: center; position: relative; z-index: 6;">
+                    <button class="action-btn" onclick="shareArticle('${art.id}', event)">
+                        <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
+                        <span>Share</span>
+                    </button>
+                    ${isAdmin ? `<button class="admin-delete-btn" style="background:none; border:none; color:var(--text-secondary); font-size:11px; cursor:pointer;" onclick="deleteArticle('${art.id}', event)">Delete</button>` : ''}
                 </div>
             </div>
-        `;
-    });
+        </div>
+    `;
 }
 
 function shareArticle(id, event) {
@@ -792,7 +880,6 @@ function shareArticle(id, event) {
     const list = getArticles();
     const art = list.find(a => a.id === id);
     if (!art) return;
-
     const shareData = { title: art.title, text: art.snippet, url: window.location.href };
     if (navigator.share) {
         navigator.share(shareData).catch((err) => console.log('Share canceled', err));
@@ -808,7 +895,6 @@ function deleteArticle(id, event) {
     list = list.filter(a => a.id !== id);
     saveArticles(list);
     if (activeArticleId === id) closeArticleReader();
-    if (document.getElementById('profile-modal').style.display === 'block') renderProfileContent();
 }
 
 function openArticle(id) {
@@ -902,7 +988,6 @@ function renderComments(art) {
 
 function openUserProfile(username, fromReader = false) {
     cameFromArticleReader = fromReader;
-    
     if (cameFromArticleReader) {
         document.getElementById('reader-modal').style.display = 'none';
         document.getElementById('up-back-btn').innerText = '← Back to Comments';
@@ -922,15 +1007,7 @@ function openUserProfile(username, fromReader = false) {
         area.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">This user hasn\'t published any posts yet.</div>';
     } else {
         userPosts.forEach(art => {
-            area.innerHTML += `
-                <div class="featured-card" onclick="closeUserProfileModal(); openArticle('${art.id}')">
-                    <div class="card-body">
-                        <span class="meta-tag">${art.category}</span>
-                        <h2 class="card-title">${art.title}</h2>
-                        <p class="card-snippet">${art.snippet}</p>
-                    </div>
-                </div>
-            `;
+            area.innerHTML += buildCardHTML(art);
         });
     }
 
@@ -1060,21 +1137,6 @@ function toggleNotifications() {
     dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
 }
 
-function openProfileView() {
-    loadUserData();
-    document.getElementById('profile-modal').style.display = 'block';
-    renderProfileContent();
-}
-
-function closeProfileView() { document.getElementById('profile-modal').style.display = 'none'; }
-
-function switchProfileTab(tab, el) {
-    activeProfileTab = tab;
-    document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    renderProfileContent();
-}
-
 function renderProfileContent() {
     const area = document.getElementById('profile-content-area');
     const list = getArticles();
@@ -1087,15 +1149,7 @@ function renderProfileContent() {
             return;
         }
         myStories.forEach(art => {
-            area.innerHTML += `
-                <div class="featured-card" onclick="closeProfileView(); openArticle('${art.id}')">
-                    <div class="card-body">
-                        <span class="meta-tag">${art.category}</span>
-                        <h2 class="card-title">${art.title}</h2>
-                        <p class="card-snippet">${art.snippet}</p>
-                    </div>
-                </div>
-            `;
+            area.innerHTML += buildCardHTML(art);
         });
     } else {
         const bookmarkedArticles = list.filter(a => bookmarks.includes(a.id));
@@ -1104,17 +1158,16 @@ function renderProfileContent() {
             return;
         }
         bookmarkedArticles.forEach(art => {
-            area.innerHTML += `
-                <div class="featured-card" onclick="closeProfileView(); openArticle('${art.id}')">
-                    <div class="card-body">
-                        <span class="meta-tag">${art.category}</span>
-                        <h2 class="card-title">${art.title}</h2>
-                        <p class="card-snippet">${art.snippet}</p>
-                    </div>
-                </div>
-            `;
+            area.innerHTML += buildCardHTML(art);
         });
     }
+}
+
+function switchProfileTab(tab, el) {
+    activeProfileTab = tab;
+    document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    renderProfileContent();
 }
 
 function closeArticleReader() { document.getElementById('reader-modal').style.display = 'none'; }
@@ -1161,6 +1214,7 @@ function saveNewArticle() {
 }
 
 loadUserData();
+updateProfileDisplay();
 renderFeed();
 updateLeaderboard();
 </script>
