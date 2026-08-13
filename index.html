@@ -1683,16 +1683,24 @@ function closePublisher() {
     document.body.style.overflow = '';
 }
 
-function saveNewArticle() {
+async function saveNewArticle() {
     const title = document.getElementById('p-title').value.trim();
     const artist = document.getElementById('p-artist').value.trim();
     const category = document.getElementById('p-category').value;
     const snippet = document.getElementById('p-snippet').value.trim();
     const content = document.getElementById('p-content').value.trim();
+    const fileInput = document.getElementById('p-file');
 
     if (!title || !snippet || !content) {
         alert('Please fill out the headline, snippet, and content fields.');
         return;
+    }
+
+    // Ensure image upload finishes if a file was selected but handlePublisherImageUpload hasn't completed yet
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+        if (!publisherImageUrl) {
+            publisherImageUrl = await uploadFileToCloudStorage(fileInput.files[0], 'banners');
+        }
     }
 
     const list = getArticles();
@@ -1713,6 +1721,7 @@ function saveNewArticle() {
     list.unshift(newArt);
     saveArticles(list);
     publisherImageUrl = '';
+    if (fileInput) fileInput.value = '';
     document.getElementById('publisher-modal').style.display = 'none';
     document.body.style.overflow = '';
     switchTab('feed');
