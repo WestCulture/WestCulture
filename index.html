@@ -703,16 +703,24 @@
 </div>
 
 <script>
-// Load configuration securely from runtime environment variables (Netlify injection fallback support)
+// Import the functions you need from the SDKs you need
+// (Integrated with Firebase compat & runtime config fallbacks)
 const firebaseConfig = {
-    apiKey: window.env?.FIREBASE_API_KEY || "AIzaSyAlI8WcqYVWE1EbMO5XxQuyExnBNJ3AS2I",
-    authDomain: window.env?.FIREBASE_AUTH_DOMAIN || "westculture-9d558.firebaseapp.com",
-    projectId: window.env?.FIREBASE_PROJECT_ID || "westculture-9d558",
-    storageBucket: window.env?.FIREBASE_STORAGE_BUCKET || "westculture-9d558.firebasestorage.app",
-    messagingSenderId: window.env?.FIREBASE_MESSAGING_SENDER_ID || "82084479264",
-    appId: window.env?.FIREBASE_APP_ID || "1:82084479264:web:9ef6b5e187ea6560429745"
+  apiKey: "AIzaSyAroE0Wl8NuuCVSYPR7CYNTmSk-C3fg8U4",
+  authDomain: "westpulseng.firebaseapp.com",
+  projectId: "westpulseng",
+  storageBucket: "westpulseng.firebasestorage.app",
+  messagingSenderId: "137100091339",
+  appId: "1:137100091339:web:af708da7667203d23de04e",
+  measurementId: "G-ZDWF1G0RWB"
 };
-if (typeof firebase !== 'undefined') { firebase.initializeApp(firebaseConfig); }
+
+let firebaseApp = null;
+let firebaseAuth = null;
+if (typeof firebase !== 'undefined') { 
+    firebaseApp = firebase.initializeApp(firebaseConfig); 
+    firebaseAuth = firebase.auth();
+}
 
 const SUPABASE_URL = window.env?.SUPABASE_URL || 'https://rjayykpxyvhospmhlxzf.supabase.co';
 const SUPABASE_ANON_KEY = window.env?.SUPABASE_ANON_KEY || 'sb_publishable_MoXDi4w-vYWl11Jark0ZwA_iPMYomK4';
@@ -910,15 +918,32 @@ function toggleSidebar() {
 }
 
 function handleGoogleSignIn() {
+    if (!firebaseAuth) {
+        alert('Firebase Auth not initialized.');
+        return;
+    }
     const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider).then((result) => {
-        currentUsername = result.user.displayName || 'User';
-        currentUserAvatar = result.user.photoURL || '';
-        userAvatarsMap[currentUsername] = currentUserAvatar;
-        document.getElementById('auth-btn').innerText = '✓ ' + currentUsername;
-        updateProfileDisplay();
-        loadUserData();
-    }).catch(err => alert(err.message));
+    firebaseAuth.signInWithRedirect(provider).catch(err => alert(err.message));
+}
+
+// Handle return from Firebase Google Redirect login
+if (firebaseAuth) {
+    firebaseAuth.getRedirectResult()
+      .then((result) => {
+        if (result && result.user) {
+          const user = result.user;
+          currentUsername = user.displayName || 'User';
+          currentUserAvatar = user.photoURL || '';
+          userAvatarsMap[currentUsername] = currentUserAvatar;
+          const authBtn = document.getElementById('auth-btn');
+          if (authBtn) authBtn.innerText = '✓ ' + currentUsername;
+          updateProfileDisplay();
+          loadUserData();
+        }
+      })
+      .catch((error) => {
+        console.error("Auth error:", error.message);
+      });
 }
 
 function updateProfileDisplay() {
@@ -1745,50 +1770,9 @@ function addNotification(msg) {
 }
 
 window.onload = function() {
-  renderFeed();
-  updateLeaderboard();
-};
-
-function handleGoogleSignIn() {
-  const auth = firebase.auth();
-  const provider = new firebase.auth.GoogleAuthProvider();
-
-  auth.signInWithPopup(provider)
-    .then((result) => {
-      const user = result.user;
-      currentUsername = user.displayName || 'User';
-      currentUserAvatar = user.photoURL || '';
-      userAvatarsMap[currentUsername] = currentUserAvatar;
-
-      const authBtn = document.getElementById('auth-btn');
-      if (authBtn) authBtn.innerText = '✓ ' + currentUsername;
-
-      updateProfileDisplay();
-      loadUserData();
-      renderFeed();
-    })
-    .catch((error) => {
-      console.error("Popup Sign-In Error:", error);
-      alert("Sign-in failed: " + error.message);
-    });
-}
-
-firebase.auth().onAuthStateChanged((user) => {
-  const authBtn = document.getElementById('auth-btn');
-  if (user) {
-    currentUsername = user.displayName || 'User';
-    currentUserAvatar = user.photoURL || '';
-    userAvatarsMap[currentUsername] = currentUserAvatar;
-    
-    if (authBtn) authBtn.innerText = '✓ ' + currentUsername;
-    updateProfileDisplay();
-    loadUserData();
     renderFeed();
-  } else {
-    if (authBtn) authBtn.innerText = 'Sign In';
-  }
-});
-
+    updateLeaderboard();
+};
 </script>
 </body>
 </html>
