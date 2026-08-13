@@ -729,6 +729,26 @@ if (typeof supabase !== 'undefined') {
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
+const auth = typeof firebase !== 'undefined' ? firebase.auth() : null;
+if (auth) {
+  getRedirectResult(auth)
+    .then((result) => {
+      if (result && result.user) {
+        const user = result.user;
+        currentUsername = user.displayName || 'User';
+        currentUserAvatar = user.photoURL || '';
+        userAvatarsMap[currentUsername] = currentUserAvatar;
+        const authBtn = document.getElementById('auth-btn');
+        if (authBtn) authBtn.innerText = '✓ ' + currentUsername;
+        updateProfileDisplay();
+        loadUserData();
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
 /**
  * Universal Cloud Storage Upload Helper
  * Pushes uploaded files to Firebase Storage (or Supabase Storage fallback)
@@ -924,26 +944,6 @@ function handleGoogleSignIn() {
     }
     const provider = new firebase.auth.GoogleAuthProvider();
     firebaseAuth.signInWithRedirect(provider).catch(err => alert(err.message));
-}
-
-// Handle return from Firebase Google Redirect login
-if (firebaseAuth) {
-    firebaseAuth.getRedirectResult()
-      .then((result) => {
-        if (result && result.user) {
-          const user = result.user;
-          currentUsername = user.displayName || 'User';
-          currentUserAvatar = user.photoURL || '';
-          userAvatarsMap[currentUsername] = currentUserAvatar;
-          const authBtn = document.getElementById('auth-btn');
-          if (authBtn) authBtn.innerText = '✓ ' + currentUsername;
-          updateProfileDisplay();
-          loadUserData();
-        }
-      })
-      .catch((error) => {
-        console.error("Auth error:", error.message);
-      });
 }
 
 function updateProfileDisplay() {
