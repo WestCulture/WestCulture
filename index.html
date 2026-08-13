@@ -1778,6 +1778,27 @@ window.onload = function() {
     renderFeed();
     updateLeaderboard();
 };
+
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    // User is signed in
+    currentUsername = user.displayName || 'User';
+    currentUserAvatar = user.photoURL || '';
+    userAvatarsMap[currentUsername] = currentUserAvatar;
+    
+    const authBtn = document.getElementById('auth-btn');
+    if (authBtn) authBtn.innerText = '✓ ' + currentUsername;
+    
+    updateProfileDisplay();
+    loadUserData();
+    renderFeed();
+  } else {
+    // User is signed out
+    const authBtn = document.getElementById('auth-btn');
+    if (authBtn) authBtn.innerText = 'Sign In';
+  }
+});
+
 </script>
 </body>
 </html>
