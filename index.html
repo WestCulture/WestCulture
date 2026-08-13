@@ -4,21 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WestPulse</title>
-    
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <!-- Firebase Web SDK (v9 Compatibility) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <style>
         :root {
             --bg-main: #000000;
-            --bg-card: rgba(10, 10, 10, 0.85);
-            --bg-elevated: rgba(22, 22, 22, 0.9);
+            --bg-card: rgba(255, 255, 255, 0.03) !important;
+            --bg-elevated: rgba(255, 255, 255, 0.05) !important;
             --text-primary: #ffffff;
-            --text-secondary: #71767b;
-            --accent-gold: #f3c614;
-            --site-theme-color: #f3c614;
-            --border-color: #2f3336;
+            --text-secondary: #e5e7eb;
+            --accent-gold: #ffd700;
+            --site-theme-color: #ffd700;
+            --border-color: rgba(255, 255, 255, 0.06) !important;
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
@@ -39,60 +43,207 @@
 
         .container { max-width: 560px; width: 100%; margin: 0 auto; padding: 0 16px; }
 
-        /* Keyed Side-by-Side Logo Emblem */
-        .brand-logo { 
-            font-weight: 800; 
-            font-size: 20px; 
-            color: #fff; 
-            text-decoration: none; 
-            cursor: pointer; 
-            display: inline-flex; 
-            align-items: baseline; 
-            letter-spacing: -0.8px;
+        /* Navigation Bar Header */
+        .navbar-header { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 12px 16px; 
+            border-bottom: 1px solid var(--border-color); 
+            margin-bottom: 20px; 
+            backdrop-filter: blur(10px); 
         }
-
-        .brand-w {
-            font-family: 'Academy Engraved LET', 'Times New Roman', Times, serif;
-            font-weight: 700;
-            display: inline-block;
-            color: #ffffff;
-            font-size: 1.25em; 
-            transform: translateY(1.5px); 
-            margin-right: -1px; 
-            letter-spacing: 0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9), 0 0 10px rgba(255, 255, 255, 0.4);
-        }
-
-        .brand-logo span:not(.brand-w) { color: var(--accent-gold); }
-
-        /* Top Navigation */
-        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 16px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; backdrop-filter: blur(10px); }
-        .nav-left { display: flex; align-items: center; gap: 12px; }
-        .hamburger-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 4px; }
-        .hamburger-btn span { display: block; width: 22px; height: 2px; background: var(--text-primary); border-radius: 2px; }
         
-        .nav-right-actions { display: flex; align-items: center; gap: 8px; }
-        .notification-bell-btn { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 6px; font-size: 13px; cursor: pointer; position: relative; }
-        .notification-badge { position: absolute; top: -4px; right: -4px; background: red; color: white; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 10px; display: none; }
-        .btn-signin { background: var(--accent-gold); color: #000; border: none; padding: 8px 14px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; }
+        .brand-logo {
+            font-size: 20px;
+            text-decoration: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: baseline;
+            letter-spacing: -0.8px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            color: white;
+        }
 
-        /* Bottom Tab Navigation Bar */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10, 10, 10, 0.95); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 10px 0; z-index: 150; backdrop-filter: blur(10px); }
-        .bottom-nav-item { background: none; border: none; color: var(--text-secondary); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-right-actions { display: flex; align-items: center; gap: 8px; }
+        .notification-badge { position: absolute; top: -4px; right: -4px; background: red; color: white; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 10px; display: none; }
+
+        /* FIXED BOTTOM NAVIGATION */
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            right: 0; 
+            background: rgba(10, 10, 10, 0.95); 
+            border-top: 1px solid var(--border-color); 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center;
+            padding: 10px 0; 
+            z-index: 150; 
+            backdrop-filter: blur(10px); 
+        }
+        .bottom-nav-item { 
+            flex: 1;
+            background: none; 
+            border: none; 
+            color: var(--text-secondary); 
+            font-size: 11px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 4px; 
+        }
         .bottom-nav-item.active { color: var(--accent-gold); }
         .bottom-nav-item svg { width: 20px; height: 20px; fill: currentColor; }
 
-        /* Search & Filter Toolbar */
+        /* Standard Published Post Card */
+        .post-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        /* External Media Live Card */
+        .live-media-card {
+            background: #16181d;
+            border: 1px solid #3b82f6;
+            border-left: 4px solid #ef4444;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        .card-tag {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .live-tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .pulsing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            box-shadow: 0 0 0 rgba(239, 68, 68, 0.4);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* Engagement Toolbar & Buttons */
+        .engagement-bar { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            border-top: 1px solid var(--border-color); 
+            padding-top: 12px; 
+            margin-top: 12px;
+            position: relative; 
+            z-index: 5; 
+        }
+        .action-group { display: flex; gap: 16px; align-items: center; }
+        .action-btn { background: none; border: none; color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .action-btn svg { width: 16px; height: 16px; fill: currentColor; }
+        .action-btn:hover { color: var(--accent-gold); }
+        .action-btn.liked svg { fill: var(--accent-gold); }
+        .action-btn.bookmarked svg { fill: var(--accent-gold); }
+
+        /* THEME-SYNCED DELETE BUTTON STYLE */
+        .action-btn.delete-btn {
+            color: var(--site-theme-color);
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid var(--site-theme-color);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .action-btn.delete-btn:hover {
+            background: var(--site-theme-color);
+            color: #000;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #121212;
+            width: 100%;
+            max-height: 90vh;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 24px 16px;
+            overflow-y: auto;
+            border-top: 1px solid var(--border-color, #2f3336);
+            position: relative;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-secondary, #71767b);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .category-scroll-container {
+            width: 100%;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 12px 16px;
+            background: transparent;
+            scrollbar-width: none;
+        }
+
+        .category-scroll-container::-webkit-scrollbar { display: none; }
+
         .search-toolbar { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
         .search-input { flex: 1; background: var(--bg-card); border: 1px solid var(--border-color); padding: 10px 14px; border-radius: 8px; color: #fff; font-size: 13px; outline: none; backdrop-filter: blur(10px); }
-        .search-btn { background: var(--accent-gold); color: #000; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; white-space: nowrap; }
 
-        /* Welcome Banner */
         .welcome-banner { background: linear-gradient(135deg, rgba(22, 22, 22, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-left: 3px solid var(--accent-gold); padding: 16px; border-radius: 8px; margin-bottom: 20px; }
         .welcome-title { font-size: 13px; font-weight: 800; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
         .welcome-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
 
-        /* Sliding Sidebar */
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 300; backdrop-filter: blur(5px); }
         .sidebar { position: fixed; top: 0; left: -320px; width: 320px; height: 100%; background: #0a0a0a; z-index: 301; transition: left 0.3s ease; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; overflow-y: auto; }
         .sidebar.open { left: 0; }
@@ -110,11 +261,9 @@
         .sidebar-footer-links a { color: var(--text-secondary); font-size: 11px; text-decoration: none; cursor: pointer; }
         .sidebar-copyright { padding: 20px; font-size: 10px; color: var(--text-secondary); line-height: 1.5; }
 
-        /* Views */
         .app-view { display: none; }
         .app-view.active { display: block; }
 
-        /* Leaderboard */
         .radar-card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: 8px; padding: 18px; margin-bottom: 20px; }
         .radar-title { font-size: 11px; font-weight: 700; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; }
         .radar-item { display: flex; align-items: center; justify-content: space-between; background: var(--bg-elevated); padding: 12px 14px; border-radius: 6px; margin-bottom: 6px; border-left: 2px solid var(--accent-gold); }
@@ -123,14 +272,15 @@
         .celeb-name { font-weight: 700; font-size: 15px; color: var(--text-primary); }
         .celeb-tag { font-size: 10px; color: var(--text-secondary); margin-top: 2px; text-transform: uppercase; }
         .mentions-badge { font-size: 10px; font-weight: 700; color: var(--accent-gold); background: rgba(243, 198, 20, 0.1); border: 1px solid rgba(243, 198, 20, 0.3); padding: 4px 8px; border-radius: 4px; }
+        
+        .see-more-ranks-btn { width: 100%; background: var(--bg-elevated); border: 1px solid var(--border-color); color: var(--accent-gold); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; padding: 12px; border-radius: 6px; margin-top: 10px; cursor: pointer; transition: background 0.2s; }
+        .see-more-ranks-btn:hover { background: rgba(255, 215, 0, 0.08); }
 
-        /* Categories Bar */
         .categories { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 20px; scrollbar-width: none; }
         .categories::-webkit-scrollbar { display: none; }
         .cat-chip { background: var(--bg-card); backdrop-filter: blur(10px); color: var(--text-secondary); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; border: 1px solid var(--border-color); }
         .cat-chip.active { background: var(--text-primary); color: var(--bg-main); border-color: var(--text-primary); }
 
-        /* Article Cards */
         .featured-card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
         .card-banner { width: 100%; height: 200px; object-fit: cover; display: block; border-bottom: 1px solid var(--border-color); }
         .card-body { padding: 18px; cursor: pointer; }
@@ -138,27 +288,46 @@
         .card-title { font-size: 20px; font-weight: 800; line-height: 1.25; color: var(--text-primary); margin-bottom: 8px; }
         .card-snippet { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
 
-        /* Engagement Bar */
-        .engagement-bar { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-color); padding: 12px 18px; background: rgba(255,255,255,0.01); position: relative; z-index: 5; }
-        .action-group { display: flex; gap: 16px; align-items: center; }
-        .action-btn { background: none; border: none; color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-        .action-btn svg { width: 16px; height: 16px; fill: currentColor; }
-        .action-btn:hover { color: var(--accent-gold); }
-        .action-btn.liked svg { fill: var(--accent-gold); }
-        .action-btn.bookmarked svg { fill: var(--accent-gold); }
-
-        /* Floating Action Button */
-        .fab-btn { position: fixed; bottom: 75px; right: 20px; background: var(--accent-gold); color: #000; border: none; padding: 14px 20px; border-radius: 30px; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,0.5); z-index: 140; }
-
-        /* Modals */
-        .modal-screen { display: none; background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(15px); position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 200; padding: 20px; overflow-y: auto; }
+        /* MODAL FIX: Applied solid background color (#050505) to completely cover background feed */
+        .modal-screen { 
+            display: none; 
+            background: #050505; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            z-index: 500; 
+            padding: 20px; 
+            overflow-y: auto; 
+        }
         
-        #reader-modal { z-index: 210; }
+        #reader-modal { z-index: 510; }
         #reader-modal .container { max-width: 720px; padding-bottom: 100px; }
         
-        .btn-back { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-bottom: 20px; cursor: pointer; }
+        .btn-back { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 6px; font-size: 12px; font-weight: 700; margin-bottom: 15px; cursor: pointer; display: inline-block; }
         
-        /* --- Comments Section --- */
+        .reader-logo-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .reader-logo-banner .brand-logo {
+            font-size: 16px;
+        }
+        .reader-logo-tag {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-gold);
+            font-weight: 700;
+        }
+
         .tiktok-comments-container { margin-top: 28px; background: rgba(16, 16, 16, 0.92); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; padding-bottom: 90px; }
         .tiktok-comment-header { font-size: 13px; font-weight: 700; text-align: center; padding: 12px 0; color: var(--accent-gold); border-bottom: 1px solid var(--border-color); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
         
@@ -178,7 +347,7 @@
         .tiktok-reply-btn { background: none; border: none; color: var(--text-secondary); font-weight: 600; cursor: pointer; font-size: 11px; z-index: 12; position: relative; padding: 4px 0; }
         .tiktok-reply-btn:hover { color: var(--text-primary); }
 
-        .delete-action-text { color: var(--accent-gold); cursor: pointer; font-size: 10px; font-weight: 600; z-index: 12; position: relative; }
+        .delete-action-text { color: var(--site-theme-color); cursor: pointer; font-size: 10px; font-weight: 600; z-index: 12; position: relative; }
 
         .tiktok-like-box { position: absolute; right: 0; top: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; border: none; cursor: pointer; padding: 4px; z-index: 12; }
         .tiktok-like-box svg { width: 18px; height: 18px; fill: var(--text-secondary); transition: fill 0.2s ease; }
@@ -187,29 +356,25 @@
 
         .tiktok-replies-container { margin-top: 10px; padding-left: 20px; border-left: 2px solid var(--border-color); background: rgba(0,0,0,0.3); border-radius: 0 8px 8px 0; padding-top: 4px; padding-bottom: 4px; }
 
-        /* Fixed Bottom Comment Input Bar */
-        .tiktok-input-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10, 10, 10, 0.98); border-top: 1px solid var(--border-color); padding: 12px 16px; display: flex; align-items: center; justify-content: center; z-index: 250; backdrop-filter: blur(10px); }
+        .tiktok-input-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #0a0a0a; border-top: 1px solid var(--border-color); padding: 12px 16px; display: flex; align-items: center; justify-content: center; z-index: 550; }
         .tiktok-input-inner { max-width: 720px; width: 100%; margin: 0 auto; display: flex; align-items: center; gap: 10px; }
         .tiktok-input { flex: 1; background: #161616; border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 16px; color: #fff; font-size: 13px; outline: none; }
         .tiktok-input::placeholder { color: var(--text-secondary); }
         .tiktok-send-btn { background: var(--accent-gold); color: #000; border: none; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 13px; cursor: pointer; }
 
-        /* Profile View Styling */
         .profile-header { background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; backdrop-filter: blur(10px); }
         .profile-avatar { width: 64px; height: 64px; background: var(--accent-gold); color: #000; font-weight: 800; font-size: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; background-size: cover; background-position: center; overflow: hidden; }
         .profile-tabs { display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
         .profile-tab { background: none; border: none; color: var(--text-secondary); font-size: 13px; font-weight: 700; cursor: pointer; padding: 6px 12px; border-radius: 6px; }
         .profile-tab.active { background: var(--bg-elevated); color: var(--accent-gold); border: 1px solid var(--border-color); }
 
-        /* Notifications Dropdown */
         .notification-dropdown { display: none; position: absolute; top: 60px; right: 16px; width: 300px; background: #0a0a0a; border: 1px solid var(--border-color); border-radius: 8px; z-index: 250; padding: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
         .notif-item { font-size: 12px; color: var(--text-primary); padding: 8px; border-bottom: 1px solid var(--border-color); margin-bottom: 6px; }
         .notif-item:last-child { border-bottom: none; margin-bottom: 0; }
 
-        /* Form Inputs */
         .form-group { margin-bottom: 16px; }
         label { display: block; font-size: 11px; text-transform: uppercase; color: var(--accent-gold); font-weight: 700; margin-bottom: 6px; letter-spacing: 1px; }
-        input, select, textarea { width: 100%; padding: 12px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; outline: none; }
+        input, select, textarea { width: 100%; padding: 12px; background: #161616; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; outline: none; }
         .btn-primary-action { width: 100%; background: var(--accent-gold); color: #000; border: none; padding: 14px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
@@ -219,7 +384,7 @@
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <div class="sidebar-brand"><span class="brand-w">W</span>est<span>Pulse</span></div>
+        <div class="sidebar-brand">West<span>Pulse</span></div>
         <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
     </div>
     <div class="sidebar-grid">
@@ -248,29 +413,54 @@
     </div>
 </div>
 
-<!-- Navigation Bar -->
+<!-- Navigation Bar Header Integrated -->
 <div class="container">
-    <nav class="navbar">
-        <div class="nav-left">
-            <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <a class="brand-logo" onclick="switchTab('feed')"><span class="brand-w">W</span>est<span>Pulse</span></a>
+    <nav class="navbar-header">
+      
+      <!-- Left Side: Menu Toggle + Logo + Brand Name -->
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <!-- Menu Button -->
+        <button id="menu-toggle" onclick="toggleSidebar()" style="background: none; border: none; cursor: pointer; color: white; display: flex; align-items: center;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+
+        <!-- WP Gold-Accented Logo Icon -->
+        <div class="header-logo-icon" style="display: flex; align-items: center;">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="32" height="32" style="border-radius: 8px;">
+            <rect width="120" height="120" fill="#0b131a" rx="24"/>
+            <g transform="translate(18, 22) scale(0.85)">
+              <path d="M5 10 L15 50 L35 25 L55 50 L65 10" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M55 10 H75 C88 10 88 35 75 35 H55 V60" fill="none" stroke="#d4af37" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+          </svg>
         </div>
-        <div class="nav-right-actions">
-            <div style="position: relative;">
-                <button class="notification-bell-btn" onclick="toggleNotifications()">🔔 <span class="notification-badge" id="notif-badge">0</span></button>
-                <div class="notification-dropdown" id="notif-dropdown">
-                    <div style="font-size: 11px; text-transform: uppercase; color: var(--accent-gold); font-weight: 700; margin-bottom: 8px;">Activity Notifications</div>
-                    <div id="notif-list" style="max-height: 180px; overflow-y: auto;">
-                        <div style="font-size: 11px; color: var(--text-secondary);">No recent alerts.</div>
-                    </div>
+
+        <!-- Brand Text -->
+        <span class="brand-title" onclick="switchTab('feed')" style="font-size: 20px; font-weight: bold; color: white; letter-spacing: -0.5px; cursor: pointer;">
+          West<span style="color: #ffd700;">Pulse</span>
+        </span>
+      </div>
+
+      <!-- Right Side: Notifications & Sign In -->
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <!-- Notification Bell -->
+        <div style="position: relative;">
+            <button class="notification-btn" onclick="toggleNotifications()" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 8px; cursor: pointer; color: white;">
+              🔔 <span class="notification-badge" id="notif-badge">0</span>
+            </button>
+            <div class="notification-dropdown" id="notif-dropdown">
+                <div style="font-size: 11px; text-transform: uppercase; color: var(--accent-gold); font-weight: 700; margin-bottom: 8px;">Activity Notifications</div>
+                <div id="notif-list" style="max-height: 180px; overflow-y: auto;">
+                    <div style="font-size: 11px; color: var(--text-secondary);">No recent alerts.</div>
                 </div>
             </div>
-            <button class="btn-signin" id="auth-btn" onclick="handleGoogleSignIn()">Sign In</button>
         </div>
+        <!-- Sign In Button -->
+        <button class="sign-in-btn" id="auth-btn" onclick="handleGoogleSignIn()" style="background: #ffd700; color: #000; border: none; padding: 8px 16px; border-radius: 12px; font-weight: bold; cursor: pointer;">
+          Sign In
+        </button>
+      </div>
+
     </nav>
 </div>
 
@@ -278,15 +468,15 @@
 <div class="bottom-nav">
     <button class="bottom-nav-item active" id="nav-btn-feed" onclick="switchTab('feed')">
         <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        Feed
+        <span>Feed</span>
     </button>
     <button class="bottom-nav-item" id="nav-btn-search" onclick="switchTab('search')">
         <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        Search
+        <span>Search</span>
     </button>
     <button class="bottom-nav-item" id="nav-btn-profile" onclick="switchTab('profile')">
         <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-        Profile
+        <span>Profile</span>
     </button>
 </div>
 
@@ -300,6 +490,7 @@
     <div class="radar-card">
         <div class="radar-title">Top 100 Live Rank</div>
         <div id="radar-list"></div>
+        <button class="see-more-ranks-btn" onclick="openTop100Modal()">See More Top 100 Live Ranks</button>
     </div>
 
     <div class="categories">
@@ -309,6 +500,7 @@
         <div class="cat-chip" onclick="filterCategory('Viral Trends', this)">Viral Trends</div>
     </div>
 
+    <div id="dynamic-feed-container"></div>
     <div id="article-feed"></div>
 </div>
 
@@ -334,7 +526,7 @@
         <div class="profile-avatar" id="profile-initial">G</div>
         <h2 id="profile-name" style="font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 4px;">Guest User</h2>
         <p id="profile-bio" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">WestPulse Elite Contributor</p>
-        <button class="btn-signin" style="background:var(--bg-elevated); border:1px solid var(--border-color); color:var(--text-primary); font-size:11px;" onclick="openEditProfileModal()">Edit Profile</button>
+        <button class="sign-in-btn" style="background:var(--bg-elevated); border:1px solid var(--border-color); color:var(--text-primary); font-size:11px;" onclick="openEditProfileModal()">Edit Profile</button>
     </div>
 
     <div class="profile-tabs">
@@ -360,7 +552,7 @@
             <input type="text" id="edit-bio-input" placeholder="Tell us about yourself...">
         </div>
         <div class="form-group">
-            <label>Profile Picture</label>
+            <label>Profile Picture (Cloud Storage)</label>
             <input type="file" id="edit-avatar-file" accept="image/*">
         </div>
         <button class="btn-primary-action" onclick="saveProfileChanges()">Save Changes</button>
@@ -381,12 +573,33 @@
     </div>
 </div>
 
-<button class="fab-btn" onclick="openPublisher()">+ Publish</button>
+<!-- Top 100 Live Ranks Full Modal -->
+<div class="modal-screen" id="top100-modal">
+    <div class="container">
+        <button class="btn-back" onclick="closeTop100Modal()">← Back</button>
+        
+        <div class="reader-logo-banner">
+            <span class="brand-logo" style="font-size:16px;">West<span style="color:#ffd700;">Pulse</span></span>
+            <span class="reader-logo-tag">Verified Publisher Edition</span>
+        </div>
+
+        <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 16px; color: var(--accent-gold);">Top 100 Live Artistes Ranks</h2>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">Real-time ranking of top artists based on current community traction, published mentions, and engagement scores.</p>
+        
+        <div id="full-top100-list"></div>
+    </div>
+</div>
 
 <!-- Article Reader & Comments Modal -->
 <div class="modal-screen" id="reader-modal">
     <div class="container">
         <button class="btn-back" onclick="closeArticleReader()">← Back</button>
+        
+        <div class="reader-logo-banner">
+            <span class="brand-logo" style="font-size:16px;">West<span style="color:#ffd700;">Pulse</span></span>
+            <span class="reader-logo-tag">Verified Publisher Edition</span>
+        </div>
+
         <div id="reader-body"></div>
         
         <div class="tiktok-comments-container">
@@ -398,12 +611,12 @@
     <div class="tiktok-input-bar">
         <div class="tiktok-input-inner">
             <input type="text" id="comment-input" class="tiktok-input" placeholder="Add comment...">
-            <input type="file" id="comment-file-input" accept="image/*" style="display: none;" onchange="previewCommentImage(this)">
+            <input type="file" id="comment-file-input" accept="image/*" style="display: none;" onchange="handleCommentImageUpload(this)">
             <button type="button" onclick="document.getElementById('comment-file-input').click()" style="background:none; border:none; color:var(--text-secondary); font-size:18px; cursor:pointer;" title="Attach Image">📷</button>
             <button onclick="submitMainComment()" class="tiktok-send-btn">Post</button>
         </div>
     </div>
-    <div id="comment-img-preview-container" style="display: none; position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: #000; padding: 4px; border: 1px solid var(--border-color); border-radius: 8px; z-index: 260;">
+    <div id="comment-img-preview-container" style="display: none; position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: #000; padding: 4px; border: 1px solid var(--border-color); border-radius: 8px; z-index: 560;">
         <img id="comment-img-preview" style="max-height: 40px; border-radius: 4px;">
         <span onclick="clearCommentImage()" style="cursor: pointer; color: #ff0000; font-size: 12px; margin-left: 6px;">✕</span>
     </div>
@@ -434,8 +647,8 @@
             </select>
         </div>
         <div class="form-group">
-            <label>Upload Banner Image</label>
-            <input type="file" id="p-file" accept="image/*">
+            <label>Upload Banner Image (Direct to Cloud Storage)</label>
+            <input type="file" id="p-file" accept="image/*" onchange="handlePublisherImageUpload(this)">
         </div>
         <div class="form-group">
             <label>Snippet</label>
@@ -445,7 +658,7 @@
             <label>Full Story Content</label>
             <textarea id="p-content" placeholder="Write full article content..." style="height: 100px; resize: none;"></textarea>
         </div>
-        <button class="btn-primary-action" onclick="saveNewArticle()">Publish Story</button>
+        <button type="button" id="publishBtn" class="btn-primary-action" onclick="saveNewArticle()">Publish Story</button>
     </div>
 </div>
 
@@ -481,16 +694,110 @@
     </div>
 </div>
 
+<!-- Post Detail Modal Overlay -->
+<div id="postModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closePostDetail()">&times;</button>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
 <script>
+// Load configuration securely from runtime environment variables (Netlify injection fallback support)
 const firebaseConfig = {
-    apiKey: "AIzaSyAlI8WcqYVWE1EbMO5XxQuyExnBNJ3AS2I",
-    authDomain: "westculture-9d558.firebaseapp.com",
-    projectId: "westculture-9d558",
-    storageBucket: "westculture-9d558.firebasestorage.app",
-    messagingSenderId: "82084479264",
-    appId: "1:82084479264:web:9ef6b5e187ea6560429745"
+    apiKey: window.env?.FIREBASE_API_KEY || "AIzaSyAlI8WcqYVWE1EbMO5XxQuyExnBNJ3AS2I",
+    authDomain: window.env?.FIREBASE_AUTH_DOMAIN || "westculture-9d558.firebaseapp.com",
+    projectId: window.env?.FIREBASE_PROJECT_ID || "westculture-9d558",
+    storageBucket: window.env?.FIREBASE_STORAGE_BUCKET || "westculture-9d558.firebasestorage.app",
+    messagingSenderId: window.env?.FIREBASE_MESSAGING_SENDER_ID || "82084479264",
+    appId: window.env?.FIREBASE_APP_ID || "1:82084479264:web:9ef6b5e187ea6560429745"
 };
 if (typeof firebase !== 'undefined') { firebase.initializeApp(firebaseConfig); }
+
+const SUPABASE_URL = window.env?.SUPABASE_URL || 'https://rjayykpxyvhospmhlxzf.supabase.co';
+const SUPABASE_ANON_KEY = window.env?.SUPABASE_ANON_KEY || 'sb_publishable_MoXDi4w-vYWl11Jark0ZwA_iPMYomK4';
+let supabaseClient = null;
+if (typeof supabase !== 'undefined') {
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+/**
+ * Universal Cloud Storage Upload Helper
+ * Pushes uploaded files to Firebase Storage (or Supabase Storage fallback)
+ * returning a public URL string instead of local Base64 strings.
+ */
+async function uploadFileToCloudStorage(file, folder = 'uploads') {
+    if (!file) return '';
+    const filename = `${folder}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9_.-]/g, '_')}`;
+
+    // Try Firebase Storage first if initialized
+    if (typeof firebase !== 'undefined' && firebase.storage) {
+        try {
+            const storageRef = firebase.storage().ref();
+            const fileRef = storageRef.child(filename);
+            const snapshot = await fileRef.put(file);
+            const downloadURL = await snapshot.ref.getDownloadURL();
+            return downloadURL;
+        } catch (fbErr) {
+            console.warn('Firebase Storage upload failed, attempting Supabase Storage fallback...', fbErr);
+        }
+    }
+
+    // Fallback to Supabase Storage if available
+    if (supabaseClient) {
+        try {
+            const { data, error } = await supabaseClient.storage
+                .from('westpulse-media')
+                .upload(filename, file);
+            if (error) throw error;
+            const { data: publicData } = supabaseClient.storage
+                .from('westpulse-media')
+                .getPublicUrl(filename);
+            if (publicData && publicData.publicUrl) {
+                return publicData.publicUrl;
+            }
+        } catch (sbErr) {
+            console.warn('Supabase Storage upload failed, falling back to secure object URL link.', sbErr);
+        }
+    }
+
+    // Final fallback: generate temporary object URL (or handle offline mode gracefully)
+    return URL.createObjectURL(file);
+}
+
+function timeAgo(date) {
+    if (!date) return 'Just now';
+    const timestamp = typeof date === 'number' ? date : new Date(date).getTime();
+    if (isNaN(timestamp)) return 'Just now';
+
+    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+    if (seconds < 60) return 'Just now';
+
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `${days}d ago`;
+
+    const months = Math.floor(days / 30);
+    if (months < 12) return `${months}mo ago`;
+
+    const years = Math.floor(months / 12);
+    return `${years}y ago`;
+}
+
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
 
 let defaultArticles = [
     {
@@ -499,12 +806,13 @@ let defaultArticles = [
         artist: 'Burna Boy',
         category: 'Music & Drops',
         imageUrl: '',
-        snippet: 'Ticket sales hit unprecedented numbers across international box offices.',
+        snippet: 'Ticket sales hit unprecedented numbers across international box offices, setting a brand new milestone.',
         content: 'Burna Boy continues his massive worldwide tour run, setting extraordinary standards.',
         author: 'Admin',
+        createdAt: Date.now() - 86400000,
         likes: 42,
         comments: [
-            { id: 'c-1', user: 'Fan_01', text: 'Odogwu standard!', image: '', likes: 5, liked: false, replies: [{ id: 'r-1', user: 'Admin', text: 'No doubts about that!', likes: 2, liked: false }] }
+            { id: 'c-1', user: 'Fan_01', avatar: '', text: 'Odogwu standard!', image: '', createdAt: Date.now() - 3600000, likes: 5, liked: false, replies: [{ id: 'r-1', user: 'Admin', avatar: '', text: 'No doubts about that!', createdAt: Date.now() - 1800000, likes: 2, liked: false }] }
         ]
     }
 ];
@@ -516,10 +824,11 @@ let activeArticleId = null;
 let currentUsername = 'Guest User';
 let currentUserBio = 'WestPulse Elite Contributor';
 let currentUserAvatar = '';
-let publisherImageBase64 = '';
-let commentImageBase64 = '';
-let editAvatarBase64 = '';
+let publisherImageUrl = '';
+let commentImageUrl = '';
+let editAvatarUrl = '';
 let replyingToCommentId = null;
+let replyingToUsername = null;
 let notifications = [];
 let bookmarks = [];
 let likedArticles = [];
@@ -527,26 +836,23 @@ let activeProfileTab = 'published';
 let cameFromArticleReader = false; 
 let wasSidebarOpenBeforeSettings = false; 
 
+let userAvatarsMap = {};
+
 const infoContent = {
-    terms: `
-        <h2 style="color: var(--accent-gold); font-size: 22px; margin-bottom: 16px;">Terms of Service</h2>
-        <p>Welcome to WestPulse. By accessing or using our platform, you agree to be bound by these Terms of Service. Please read them carefully.</p>
-    `,
-    privacy: `
-        <h2 style="color: var(--accent-gold); font-size: 22px; margin-bottom: 16px;">Privacy Policy</h2>
-        <p>At WestPulse, we respect your privacy. This policy outlines how we collect, use, and protect your data.</p>
-    `,
-    help: `
-        <h2 style="color: var(--accent-gold); font-size: 22px; margin-bottom: 16px;">Help & Support</h2>
-        <p>Need assistance navigating WestPulse? Tap the '+ Publish' button to share stories or use the Search tab to explore topics.</p>
-    `
+    terms: `<h2 style="color: var(--accent-gold); font-size: 22px; margin-bottom: 16px;">Terms of Service</h2><p>Welcome to WestPulse. By accessing or using our platform, you agree to be bound by these Terms of Service. Please read them carefully.</p>`,
+    privacy: `<h2 style="color: var(--accent-gold); font-size: 22px; margin-bottom: 16px;">Privacy Policy</h2><p>At WestPulse, we respect your privacy. This policy outlines how we collect, use, and protect your data.</p>`,
+    help: `<h2 style="color: var(--accent-gold); font-size: 22px; margin-bottom: 16px;">Help & Support</h2><p>Need assistance navigating WestPulse? Tap the 'Publish Post' option in the menu to share stories or use the Search tab to explore topics.</p>`
 };
 
 function openInfo(type) {
     document.getElementById('info-modal-content').innerHTML = infoContent[type] || '<p>Content not available.</p>';
     document.getElementById('info-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
 }
-function closeInfoModal() { document.getElementById('info-modal').style.display = 'none'; }
+function closeInfoModal() { 
+    document.getElementById('info-modal').style.display = 'none'; 
+    document.body.style.overflow = '';
+}
 
 function switchTab(tabName) {
     document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
@@ -573,9 +879,11 @@ function openSettingsModal() {
     wasSidebarOpenBeforeSettings = sidebar.classList.contains('open');
     if (wasSidebarOpenBeforeSettings) toggleSidebar(); 
     document.getElementById('settings-modal').style.display = 'block'; 
+    document.body.style.overflow = 'hidden';
 }
 function closeSettingsModal() { 
     document.getElementById('settings-modal').style.display = 'none';
+    document.body.style.overflow = '';
     if (wasSidebarOpenBeforeSettings) { toggleSidebar(); wasSidebarOpenBeforeSettings = false; }
 }
 
@@ -583,9 +891,11 @@ function updateSettingsTheme(val) {
     const root = document.documentElement;
     if (val === 'charcoal') {
         root.style.setProperty('--accent-gold', '#3ea6ff');
+        root.style.setProperty('--site-theme-color', '#3ea6ff');
         root.style.setProperty('--bg-elevated', 'rgba(30, 30, 30, 0.9)');
     } else {
-        root.style.setProperty('--accent-gold', '#f3c614');
+        root.style.setProperty('--accent-gold', '#ffd700');
+        root.style.setProperty('--site-theme-color', '#ffd700');
         root.style.setProperty('--bg-elevated', 'rgba(22, 22, 22, 0.9)');
     }
 }
@@ -604,6 +914,7 @@ function handleGoogleSignIn() {
     firebase.auth().signInWithPopup(provider).then((result) => {
         currentUsername = result.user.displayName || 'User';
         currentUserAvatar = result.user.photoURL || '';
+        userAvatarsMap[currentUsername] = currentUserAvatar;
         document.getElementById('auth-btn').innerText = '✓ ' + currentUsername;
         updateProfileDisplay();
         loadUserData();
@@ -621,76 +932,99 @@ function updateProfileDisplay() {
         initialEl.style.backgroundImage = 'none';
         initialEl.innerText = currentUsername.charAt(0).toUpperCase();
     }
+    userAvatarsMap[currentUsername] = currentUserAvatar;
 }
 
-document.getElementById('p-file').addEventListener('change', function(e) {
-    const file = e.target.files[0];
+async function handlePublisherImageUpload(input) {
+    const file = input.files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => { publisherImageBase64 = ev.target.result; };
-        reader.readAsDataURL(file);
+        publisherImageUrl = await uploadFileToCloudStorage(file, 'banners');
     }
-});
+}
 
-document.getElementById('edit-avatar-file').addEventListener('change', function(e) {
-    const file = e.target.files[0];
+async function handleEditAvatarUpload(input) {
+    const file = input.files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => { editAvatarBase64 = ev.target.result; };
-        reader.readAsDataURL(file);
+        editAvatarUrl = await uploadFileToCloudStorage(file, 'avatars');
     }
-});
+}
 
 function openEditProfileModal() {
     document.getElementById('edit-name-input').value = currentUsername;
     document.getElementById('edit-bio-input').value = currentUserBio;
-    editAvatarBase64 = currentUserAvatar;
+    editAvatarUrl = currentUserAvatar;
     document.getElementById('edit-profile-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
 }
-function closeEditProfileModal() { document.getElementById('edit-profile-modal').style.display = 'none'; }
+function closeEditProfileModal() { 
+    document.getElementById('edit-profile-modal').style.display = 'none'; 
+    document.body.style.overflow = '';
+}
 
 function saveProfileChanges() {
     const newName = document.getElementById('edit-name-input').value.trim();
     const newBio = document.getElementById('edit-bio-input').value.trim();
     if (newName) currentUsername = newName;
     if (newBio) currentUserBio = newBio;
-    if (editAvatarBase64) currentUserAvatar = editAvatarBase64;
+    if (editAvatarUrl) currentUserAvatar = editAvatarUrl;
 
+    userAvatarsMap[currentUsername] = currentUserAvatar;
     updateProfileDisplay();
     closeEditProfileModal();
     alert('Profile updated successfully!');
 }
 
-function previewCommentImage(input) {
+async function handleCommentImageUpload(input) {
     const file = input.files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            commentImageBase64 = ev.target.result;
-            document.getElementById('comment-img-preview').src = commentImageBase64;
-            document.getElementById('comment-img-preview-container').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
+        commentImageUrl = await uploadFileToCloudStorage(file, 'comments');
+        document.getElementById('comment-img-preview').src = commentImageUrl;
+        document.getElementById('comment-img-preview-container').style.display = 'block';
     }
 }
 
 function clearCommentImage() {
-    commentImageBase64 = '';
+    commentImageUrl = '';
     document.getElementById('comment-file-input').value = '';
     document.getElementById('comment-img-preview-container').style.display = 'none';
 }
 
 function getArticles() {
     let stored = localStorage.getItem('westpulse_articles_gold_v2');
+    let articles = [];
     if (!stored) {
-        localStorage.setItem('westpulse_articles_gold_v2', JSON.stringify(defaultArticles));
-        return defaultArticles;
+        articles = defaultArticles;
+    } else {
+        try {
+            articles = JSON.parse(stored);
+        } catch (e) {
+            articles = defaultArticles;
+        }
     }
-    return JSON.parse(stored);
+
+    articles = articles.filter(a => {
+        if (!a) return false;
+        const titleStr = String(a.title || '').trim().toLowerCase();
+        const snippetStr = String(a.snippet || '').trim().toLowerCase();
+        const contentStr = String(a.content || '').trim().toLowerCase();
+        
+        if (titleStr === 'undefined' || !titleStr) return false;
+        if (snippetStr === 'undefined') return false;
+        if (contentStr === 'undefined') return false;
+        return true;
+    });
+
+    localStorage.setItem('westpulse_articles_gold_v2', JSON.stringify(articles));
+    return articles;
 }
 
 function saveArticles(list) {
-    localStorage.setItem('westpulse_articles_gold_v2', JSON.stringify(list));
+    const cleanList = list.filter(a => {
+        if (!a) return false;
+        const titleStr = String(a.title || '').trim().toLowerCase();
+        return titleStr !== 'undefined' && titleStr !== '';
+    });
+    localStorage.setItem('westpulse_articles_gold_v2', JSON.stringify(cleanList));
     renderFeed();
     renderSearchFeed();
     updateLeaderboard();
@@ -743,26 +1077,67 @@ function updateLeaderboard() {
     const scores = {};
     articles.forEach(a => {
         if (!a.artist) return;
+        let artistKey = a.artist.trim();
         let score = (a.likes || 0) + (a.comments ? a.comments.length * 2 : 0) + 10;
-        scores[a.artist] = (scores[a.artist] || 0) + score;
+        scores[artistKey] = (scores[artistKey] || 0) + score;
     });
 
-    const sorted = Object.keys(scores).sort((a,b) => scores[b] - scores[a]).slice(0, 3);
+    const sortedArtists = Object.keys(scores).sort((a,b) => scores[b] - scores[a]);
+    
+    const top3 = sortedArtists.slice(0, 3);
     const radar = document.getElementById('radar-list');
-    if (!radar) return;
-    radar.innerHTML = '';
-    sorted.forEach((artist, idx) => {
-        radar.innerHTML += `
-            <div class="radar-item">
-                <div class="rank">#${idx + 1}</div>
-                <div class="celeb-info">
-                    <div class="celeb-name">${artist}</div>
-                    <div class="celeb-tag">Trending Score</div>
-                </div>
-                <div class="mentions-badge">${scores[artist]} PTS</div>
-            </div>
-        `;
-    });
+    if (radar) {
+        radar.innerHTML = '';
+        if (top3.length === 0) {
+            radar.innerHTML = '<div style="font-size: 12px; color: var(--text-secondary); text-align: center; padding: 10px;">No ranked artists yet. Publish posts with an artist subject!</div>';
+        } else {
+            top3.forEach((artist, idx) => {
+                radar.innerHTML += `
+                    <div class="radar-item">
+                        <div class="rank">#${idx + 1}</div>
+                        <div class="celeb-info">
+                            <div class="celeb-name">${escapeHTML(artist)}</div>
+                            <div class="celeb-tag">Trending Score</div>
+                        </div>
+                        <div class="mentions-badge">${scores[artist]} PTS</div>
+                    </div>
+                `;
+            });
+        }
+    }
+
+    const fullListContainer = document.getElementById('full-top100-list');
+    if (fullListContainer) {
+        fullListContainer.innerHTML = '';
+        if (sortedArtists.length === 0) {
+            fullListContainer.innerHTML = '<div style="font-size: 13px; color: var(--text-secondary); text-align: center; padding: 20px;">No artists ranked yet.</div>';
+        } else {
+            let rankNum = 1;
+            sortedArtists.forEach((artist) => {
+                fullListContainer.innerHTML += `
+                    <div class="radar-item" style="margin-bottom: 8px;">
+                        <div class="rank">#${rankNum}</div>
+                        <div class="celeb-info">
+                            <div class="celeb-name">${escapeHTML(artist)}</div>
+                            <div class="celeb-tag">Verified Subject Ranking</div>
+                        </div>
+                        <div class="mentions-badge">${scores[artist]} PTS</div>
+                    </div>
+                `;
+                rankNum++;
+            });
+        }
+    }
+}
+
+function openTop100Modal() {
+    document.getElementById('top100-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeTop100Modal() {
+    document.getElementById('top100-modal').style.display = 'none';
+    document.body.style.overflow = '';
 }
 
 function filterCategory(cat, el) {
@@ -834,62 +1209,173 @@ function renderSearchFeed() {
 }
 
 function buildCardHTML(art) {
-    let banner = art.imageUrl ? `<img src="${art.imageUrl}" class="card-banner">` : '';
+    let banner = art.imageUrl ? `<img src="${escapeHTML(art.imageUrl)}" class="card-banner">` : '';
     let isBookmarked = bookmarks.includes(art.id);
     let isLiked = likedArticles.includes(art.id);
-    let totalComments = art.comments ? art.comments.reduce((acc, c) => acc + 1 + (c.replies ? c.replies.length : 0), 0) : 0;
-    let isAdmin = currentUsername === 'Admin' || currentUsername === art.author;
+    let totalComments = art.comments && Array.isArray(art.comments) ? art.comments.reduce((acc, c) => acc + 1 + (c.replies ? c.replies.length : 0), 0) : 0;
+    let postTime = timeAgo(art.createdAt);
+    let safeAuthor = escapeHTML(art.author || 'Guest User');
 
     return `
         <div class="featured-card">
             ${banner}
-            <div class="card-body" onclick="openArticle('${art.id}')">
-                <span class="meta-tag">${art.category} • By <span onclick="event.stopPropagation(); openUserProfile('${art.author || 'Guest User'}', false)">${art.author || 'Guest User'}</span></span>
-                <h2 class="card-title">${art.title}</h2>
-                <p class="card-snippet">${art.snippet}</p>
+            <div class="card-body" onclick="openArticle('${escapeHTML(art.id)}')">
+                <span class="meta-tag">${escapeHTML(art.category)} • By <span onclick="event.stopPropagation(); openUserProfile('${safeAuthor}', false)">${safeAuthor}</span> • ${postTime}</span>
+                <h2 class="card-title">${escapeHTML(art.title)}</h2>
+                <p class="card-snippet">${escapeHTML(art.snippet)}</p>
             </div>
             <div class="engagement-bar">
                 <div class="action-group">
-                    <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${art.id}', event)">
+                    <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${escapeHTML(art.id)}', event)">
                         <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                         <span>${art.likes || 0}</span>
                     </button>
-                    <button class="action-btn" onclick="openArticle('${art.id}')">
+                    <button class="action-btn" onclick="openArticle('${escapeHTML(art.id)}')">
                         <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
                         <span>${totalComments}</span>
                     </button>
-                    <button class="action-btn ${isBookmarked ? 'bookmarked' : ''}" onclick="toggleBookmark('${art.id}', event)">
+                    <button class="action-btn ${isBookmarked ? 'bookmarked' : ''}" onclick="toggleBookmark('${escapeHTML(art.id)}', event)">
                         <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
                         <span>Save</span>
                     </button>
                 </div>
-                <div style="display: flex; gap: 8px; align-items: center; position: relative; z-index: 6;">
-                    <button class="action-btn" onclick="shareArticle('${art.id}', event)">
+                <div style="display: flex; gap: 12px; align-items: center; position: relative; z-index: 6;">
+                    <button class="action-btn" onclick="shareArticle('${escapeHTML(art.id)}', event)">
                         <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/></svg>
                         <span>Share</span>
                     </button>
-                    ${isAdmin ? `<button class="admin-delete-btn" style="background:none; border:none; color:var(--text-secondary); font-size:11px; cursor:pointer;" onclick="deleteArticle('${art.id}', event)">Delete</button>` : ''}
+                    <button class="action-btn delete-btn" onclick="deleteArticle('${escapeHTML(art.id)}', event)">Delete</button>
                 </div>
             </div>
         </div>
     `;
 }
 
-function shareArticle(id, event) {
+function generateShareCardImage(art, callback) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1200;
+    canvas.height = 630;
+    const ctx = canvas.getContext('2d');
+
+    const drawContent = (img) => {
+        if (img) {
+            const hRatio = canvas.width / img.width;
+            const vRatio = canvas.height / img.height;
+            const ratio = Math.max(hRatio, vRatio);
+            const centerShiftX = (canvas.width - img.width * ratio) / 2;
+            const centerShiftY = (canvas.height - img.height * ratio) / 2;
+            ctx.drawImage(img, 0, 0, img.width, img.height, centerShiftX, centerShiftY, img.width * ratio, img.height * ratio);
+        } else {
+            const bgGrad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            bgGrad.addColorStop(0, '#111318');
+            bgGrad.addColorStop(0.5, '#08090c');
+            bgGrad.addColorStop(1, '#000000');
+            ctx.fillStyle = bgGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        gradient.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
+        gradient.addColorStop(0.4, 'rgba(0, 0, 0, 0.2)');
+        gradient.addColorStop(0.7, 'rgba(0, 0, 0, 0.85)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0.98)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.font = '800 36px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('W', 60, 80);
+        const wWidth = ctx.measureText('W').width;
+        ctx.fillStyle = '#ffd700';
+        ctx.fillText('estPulse', 60 + wWidth, 80);
+
+        ctx.font = '700 22px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        ctx.fillStyle = '#ffd700';
+        ctx.fillText((art.category || 'TRENDING').toUpperCase(), 60, 480);
+
+        ctx.font = '800 48px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        ctx.fillStyle = '#ffffff';
+        
+        const words = (art.title || '').split(' ');
+        let line = '';
+        let y = 540;
+        const maxWidth = 1080;
+        const lineHeight = 58;
+
+        for (let n = 0; n < words.length; n++) {
+            let testLine = line + words[n] + ' ';
+            let metrics = ctx.measureText(testLine);
+            let testWidth = metrics.width;
+            if (testWidth > maxWidth && n > 0) {
+                ctx.fillText(line, 60, y);
+                line = words[n] + ' ';
+                y += lineHeight;
+            } else {
+                line = testLine;
+            }
+        }
+        ctx.fillText(line, 60, y);
+
+        canvas.toBlob((blob) => {
+            callback(blob);
+        }, 'image/png');
+    };
+
+    if (art.imageUrl) {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => drawContent(img);
+        img.onerror = () => drawContent(null);
+        img.src = art.imageUrl;
+    } else {
+        drawContent(null);
+    }
+}
+
+async function shareArticle(id, event) {
     if (event) event.stopPropagation();
     const list = getArticles();
     const art = list.find(a => a.id === id);
     if (!art) return;
-    const shareData = { title: art.title, text: art.snippet, url: window.location.href };
-    if (navigator.share) {
-        navigator.share(shareData).catch((err) => console.log('Share canceled', err));
-    } else {
-        navigator.clipboard.writeText(window.location.href).then(() => alert('Article link copied to clipboard!'));
-    }
+
+    generateShareCardImage(art, async (blob) => {
+        const file = new File([blob], 'westpulse-post.png', { type: 'image/png' });
+        const shareData = {
+            title: art.title,
+            text: art.snippet,
+            url: window.location.href,
+            files: [file]
+        };
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.log('Share action canceled or failed', err);
+            }
+        } else if (navigator.share) {
+            try {
+                await navigator.share({ title: art.title, text: art.snippet, url: window.location.href });
+            } catch (err) {
+                console.log('Share action canceled', err);
+            }
+        } else {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `westpulse-${art.id}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('Share card image downloaded and link copied to clipboard!');
+            });
+        }
+    });
 }
 
 function deleteArticle(id, event) {
-    event.stopPropagation();
+    if (event) event.stopPropagation();
     if (!confirm("Are you sure you want to delete this story?")) return;
     let list = getArticles();
     list = list.filter(a => a.id !== id);
@@ -903,22 +1389,35 @@ function openArticle(id) {
     const art = list.find(a => a.id === id);
     if (!art) return;
 
+    let postTime = timeAgo(art.createdAt);
+
     document.getElementById('reader-body').innerHTML = `
-        <span class="meta-tag">${art.category}</span>
-        <h1 style="font-size: 24px; font-weight: 800; line-height: 1.2; margin-bottom: 12px;">${art.title}</h1>
-        ${art.imageUrl ? `<img src="${art.imageUrl}" style="width:100%; border-radius:8px; margin-bottom:12px;">` : ''}
+        <span class="meta-tag">${escapeHTML(art.category)} • ${postTime}</span>
+        <h1 style="font-size: 24px; font-weight: 800; line-height: 1.2; margin-bottom: 12px;">${escapeHTML(art.title)}</h1>
+        ${art.imageUrl ? `<img src="${escapeHTML(art.imageUrl)}" style="width:100%; border-radius:8px; margin-bottom:12px;">` : ''}
         <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;">${art.content}</div>
     `;
 
     renderComments(art);
     document.getElementById('reader-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeArticleReader() {
+    document.getElementById('reader-modal').style.display = 'none';
+    document.body.style.overflow = '';
+    activeArticleId = null;
+    clearCommentImage();
+    replyingToCommentId = null;
+    replyingToUsername = null;
+    document.getElementById('comment-input').placeholder = 'Add comment...';
 }
 
 function renderComments(art) {
     const container = document.getElementById('comments-list');
     container.innerHTML = '';
     
-    let totalCount = art.comments ? art.comments.reduce((acc, c) => acc + 1 + (c.replies ? c.replies.length : 0), 0) : 0;
+    let totalCount = art.comments && Array.isArray(art.comments) ? art.comments.reduce((acc, c) => acc + 1 + (c.replies ? c.replies.length : 0), 0) : 0;
     document.getElementById('comments-count-title').innerText = `Comments (${totalCount})`;
 
     if (!art.comments || art.comments.length === 0) {
@@ -927,31 +1426,41 @@ function renderComments(art) {
     }
 
     art.comments.forEach(c => {
-        let avatarChar = c.user ? c.user.charAt(0).toUpperCase() : 'U';
-        let imgHtml = c.image ? `<img src="${c.image}" class="tiktok-img">` : '';
+        let avatarUrl = c.avatar || userAvatarsMap[c.user] || '';
+        let avatarStyle = avatarUrl ? `background-image: url('${escapeHTML(avatarUrl)}');` : '';
+        let avatarText = avatarUrl ? '' : (c.user ? escapeHTML(c.user.charAt(0).toUpperCase()) : 'U');
+
+        let imgHtml = c.image ? `<img src="${escapeHTML(c.image)}" class="tiktok-img">` : '';
         let isLikedClass = c.liked ? 'liked' : '';
         let commentLikes = c.likes || 0;
         let canDelete = currentUsername === 'Admin' || currentUsername === c.user;
+        let commentTime = timeAgo(c.createdAt);
+        let safeUser = escapeHTML(c.user);
 
         let repliesHtml = '';
         if (c.replies && c.replies.length > 0) {
             c.replies.forEach(r => {
-                let rAvatar = r.user ? r.user.charAt(0).toUpperCase() : 'U';
+                let rAvatarUrl = r.avatar || userAvatarsMap[r.user] || '';
+                let rAvatarStyle = rAvatarUrl ? `background-image: url('${escapeHTML(rAvatarUrl)}'); width:28px; height:28px; font-size:11px;` : `width:28px; height:28px; font-size:11px;`;
+                let rAvatarText = rAvatarUrl ? '' : (r.user ? escapeHTML(r.user.charAt(0).toUpperCase()) : 'U');
+
                 let rLikedClass = r.liked ? 'liked' : '';
                 let rLikes = r.likes || 0;
                 let canDeleteReply = currentUsername === 'Admin' || currentUsername === r.user;
+                let replyTime = timeAgo(r.createdAt);
+                let safeReplyUser = escapeHTML(r.user);
 
                 repliesHtml += `
                     <div class="tiktok-comment-item" style="padding-top: 8px;">
-                        <div class="tiktok-avatar" style="width:28px; height:28px; font-size:11px;" onclick="event.stopPropagation(); openUserProfile('${r.user}', true)">${rAvatar}</div>
+                        <div class="tiktok-avatar" style="${rAvatarStyle}" onclick="event.stopPropagation(); openUserProfile('${safeReplyUser}', true)">${rAvatarText}</div>
                         <div class="tiktok-comment-body">
-                            <div class="tiktok-username" onclick="event.stopPropagation(); openUserProfile('${r.user}', true)">${r.user} ${canDeleteReply ? `<span class="delete-action-text" onclick="event.stopPropagation(); deleteReply('${art.id}', '${c.id}', '${r.id}')">· Delete</span>` : ''}</div>
-                            <div class="tiktok-text">${r.text}</div>
+                            <div class="tiktok-username" onclick="event.stopPropagation(); openUserProfile('${safeReplyUser}', true)">${safeReplyUser} ${canDeleteReply ? `<span class="delete-action-text" onclick="event.stopPropagation(); deleteReply('${escapeHTML(art.id)}', '${escapeHTML(c.id)}', '${escapeHTML(r.id)}')">· Delete</span>` : ''}</div>
+                            <div class="tiktok-text">${escapeHTML(r.text)}</div>
                             <div class="tiktok-meta-row">
-                                <span>Just now</span>
+                                <span>${replyTime}</span>
                             </div>
                         </div>
-                        <button class="tiktok-like-box ${rLikedClass}" onclick="toggleReplyLike('${art.id}', '${c.id}', '${r.id}')">
+                        <button class="tiktok-like-box ${rLikedClass}" onclick="toggleReplyLike('${escapeHTML(art.id)}', '${escapeHTML(c.id)}', '${escapeHTML(r.id)}')">
                             <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             <span class="tiktok-like-count">${rLikes}</span>
                         </button>
@@ -962,28 +1471,94 @@ function renderComments(art) {
 
         container.innerHTML += `
             <div class="tiktok-comment-item">
-                <div class="tiktok-avatar" onclick="event.stopPropagation(); openUserProfile('${c.user}', true)">${avatarChar}</div>
+                <div class="tiktok-avatar" style="${avatarStyle}" onclick="event.stopPropagation(); openUserProfile('${safeUser}', true)">${avatarText}</div>
                 <div class="tiktok-comment-body">
-                    <div class="tiktok-username" onclick="event.stopPropagation(); openUserProfile('${c.user}', true)">${c.user} ${canDelete ? `<span class="delete-action-text" onclick="event.stopPropagation(); deleteComment('${art.id}', '${c.id}')">· Delete</span>` : ''}</div>
-                    <div class="tiktok-text">${c.text}</div>
+                    <div class="tiktok-username" onclick="event.stopPropagation(); openUserProfile('${safeUser}', true)">${safeUser} ${canDelete ? `<span class="delete-action-text" onclick="event.stopPropagation(); deleteComment('${escapeHTML(art.id)}', '${escapeHTML(c.id)}')">· Delete</span>` : ''}</div>
+                    <div class="tiktok-text">${escapeHTML(c.text)}</div>
                     ${imgHtml}
                     <div class="tiktok-meta-row">
-                        <span>1d ago</span>
-                        <button class="tiktok-reply-btn" onclick="setReplyTarget('${c.id}', '${c.user}')">Reply</button>
+                        <span>${commentTime}</span>
+                        <button class="tiktok-reply-btn" onclick="setReplyTarget('${escapeHTML(c.id)}', '${safeUser}')">Reply</button>
                     </div>
-                    ${c.replies && c.replies.length > 0 ? `
-                        <div class="tiktok-replies-container">
-                            ${repliesHtml}
-                        </div>
-                    ` : ''}
+                    ${c.replies && c.replies.length > 0 ? `<div class="tiktok-replies-container">${repliesHtml}</div>` : ''}
                 </div>
-                <button class="tiktok-like-box ${isLikedClass}" onclick="toggleCommentLike('${art.id}', '${c.id}')">
+                <button class="tiktok-like-box ${isLikedClass}" onclick="toggleCommentLike('${escapeHTML(art.id)}', '${escapeHTML(c.id)}')">
                     <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                     <span class="tiktok-like-count">${commentLikes}</span>
                 </button>
             </div>
         `;
     });
+}
+
+function setReplyTarget(commentId, username) {
+    replyingToCommentId = commentId;
+    replyingToUsername = username;
+    const input = document.getElementById('comment-input');
+    input.placeholder = `Replying to @${username}...`;
+    input.focus();
+}
+
+function submitMainComment() {
+    const input = document.getElementById('comment-input');
+    const text = input.value.trim();
+    if (!text && !commentImageUrl) return;
+
+    const list = getArticles();
+    const art = list.find(a => a.id === activeArticleId);
+    if (!art) return;
+
+    if (!art.comments) art.comments = [];
+
+    if (replyingToCommentId) {
+        const comment = art.comments.find(c => c.id === replyingToCommentId);
+        if (comment) {
+            if (!comment.replies) comment.replies = [];
+            comment.replies.push({
+                id: 'r-' + Date.now(),
+                user: currentUsername,
+                avatar: currentUserAvatar,
+                text: text,
+                createdAt: Date.now(),
+                likes: 0,
+                liked: false
+            });
+        }
+        replyingToCommentId = null;
+        replyingToUsername = null;
+        input.placeholder = 'Add comment...';
+    } else {
+        art.comments.push({
+            id: 'c-' + Date.now(),
+            user: currentUsername,
+            avatar: currentUserAvatar,
+            text: text,
+            image: commentImageUrl,
+            createdAt: Date.now(),
+            likes: 0,
+            liked: false,
+            replies: []
+        });
+        addNotification(`New comment on your story "${art.title}"`);
+    }
+
+    input.value = '';
+    clearCommentImage();
+    saveArticles(list);
+    renderComments(art);
+}
+
+function deleteReply(articleId, commentId, replyId) {
+    const list = getArticles();
+    const art = list.find(a => a.id === articleId);
+    if (art) {
+        const comment = art.comments.find(c => c.id === commentId);
+        if (comment && comment.replies) {
+            comment.replies = comment.replies.filter(r => r.id !== replyId);
+            saveArticles(list);
+            renderComments(art);
+        }
+    }
 }
 
 function openUserProfile(username, fromReader = false) {
@@ -996,7 +1571,15 @@ function openUserProfile(username, fromReader = false) {
     }
 
     document.getElementById('up-username').innerText = username;
-    document.getElementById('up-avatar').innerText = username.charAt(0).toUpperCase();
+    const upAvatarEl = document.getElementById('up-avatar');
+    let uAvatar = userAvatarsMap[username] || '';
+    if (uAvatar) {
+        upAvatarEl.style.backgroundImage = `url('${escapeHTML(uAvatar)}')`;
+        upAvatarEl.innerText = '';
+    } else {
+        upAvatarEl.style.backgroundImage = 'none';
+        upAvatarEl.innerText = username.charAt(0).toUpperCase();
+    }
     
     const list = getArticles();
     const userPosts = list.filter(a => a.author === username);
@@ -1012,12 +1595,15 @@ function openUserProfile(username, fromReader = false) {
     }
 
     document.getElementById('user-profile-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
 }
 
 function closeUserProfileModal() {
     document.getElementById('user-profile-modal').style.display = 'none';
     if (cameFromArticleReader && activeArticleId) {
         document.getElementById('reader-modal').style.display = 'block';
+    } else {
+        document.body.style.overflow = '';
     }
 }
 
@@ -1062,162 +1648,106 @@ function deleteComment(articleId, commentId) {
     }
 }
 
-function deleteReply(articleId, commentId, replyId) {
-    const list = getArticles();
-    const art = list.find(a => a.id === articleId);
-    if (art) {
-        const comment = art.comments.find(c => c.id === commentId);
-        if (comment && comment.replies) {
-            comment.replies = comment.replies.filter(r => r.id !== replyId);
-            saveArticles(list);
-            renderComments(art);
-        }
-    }
+function openPublisher() {
+    document.getElementById('publisher-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
 }
 
-function setReplyTarget(commentId, username) {
-    replyingToCommentId = commentId;
-    const input = document.getElementById('comment-input');
-    input.placeholder = `Replying to @${username}...`;
-    input.focus();
+function closePublisher() {
+    document.getElementById('publisher-modal').style.display = 'none';
+    document.body.style.overflow = '';
 }
 
-function submitMainComment() {
-    const text = document.getElementById('comment-input').value;
-    if (!text && !commentImageBase64) return;
+function saveNewArticle() {
+    const title = document.getElementById('p-title').value.trim();
+    const artist = document.getElementById('p-artist').value.trim();
+    const category = document.getElementById('p-category').value;
+    const snippet = document.getElementById('p-snippet').value.trim();
+    const content = document.getElementById('p-content').value.trim();
 
-    const list = getArticles();
-    const art = list.find(a => a.id === activeArticleId);
-    if (!art) return;
-
-    if (replyingToCommentId) {
-        const comment = art.comments.find(c => c.id === replyingToCommentId);
-        if (comment) {
-            if (!comment.replies) comment.replies = [];
-            comment.replies.push({ id: 'r-' + Date.now(), user: currentUsername, text, likes: 0, liked: false });
-            addNotification(`New reply on story "${art.title}"`);
-        }
-        replyingToCommentId = null;
-        document.getElementById('comment-input').placeholder = 'Add comment...';
-    } else {
-        if (!art.comments) art.comments = [];
-        art.comments.push({
-            id: 'c-' + Date.now(),
-            user: currentUsername,
-            text,
-            image: commentImageBase64,
-            likes: 0,
-            liked: false,
-            replies: []
-        });
-        addNotification(`New comment on your story "${art.title}"`);
+    if (!title || !snippet || !content) {
+        alert('Please fill out the headline, snippet, and content fields.');
+        return;
     }
 
-    document.getElementById('comment-input').value = '';
-    clearCommentImage();
+    const list = getArticles();
+    const newArt = {
+        id: 'art-' + Date.now(),
+        title: title,
+        artist: artist || 'General',
+        category: category,
+        imageUrl: publisherImageUrl,
+        snippet: snippet,
+        content: content,
+        author: currentUsername,
+        createdAt: Date.now(),
+        likes: 0,
+        comments: []
+    };
+
+    list.unshift(newArt);
     saveArticles(list);
-    renderComments(art);
+    publisherImageUrl = '';
+    document.getElementById('publisher-modal').style.display = 'none';
+    document.body.style.overflow = '';
+    switchTab('feed');
+}
+
+function switchProfileTab(tab, el) {
+    document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    activeProfileTab = tab;
+    renderProfileContent();
+}
+
+function renderProfileContent() {
+    const area = document.getElementById('profile-content-area');
+    area.innerHTML = '';
+    const list = getArticles();
+
+    if (activeProfileTab === 'published') {
+        const userPosts = list.filter(a => a.author === currentUsername);
+        if (userPosts.length === 0) {
+            area.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">You haven\'t published any stories yet.</div>';
+        } else {
+            userPosts.forEach(art => {
+                area.innerHTML += buildCardHTML(art);
+            });
+        }
+    } else if (activeProfileTab === 'bookmarks') {
+        const savedPosts = list.filter(a => bookmarks.includes(a.id));
+        if (savedPosts.length === 0) {
+            area.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">No bookmarked articles saved yet.</div>';
+        } else {
+            savedPosts.forEach(art => {
+                area.innerHTML += buildCardHTML(art);
+            });
+        }
+    }
+}
+
+function toggleNotifications() {
+    const dropdown = document.getElementById('notif-dropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
 }
 
 function addNotification(msg) {
     notifications.unshift(msg);
     const badge = document.getElementById('notif-badge');
     badge.innerText = notifications.length;
-    badge.style.display = 'block';
+    badge.style.display = 'inline-block';
 
-    const listEl = document.getElementById('notif-list');
-    listEl.innerHTML = '';
+    const list = document.getElementById('notif-list');
+    list.innerHTML = '';
     notifications.forEach(n => {
-        listEl.innerHTML += `<div class="notif-item">${n}</div>`;
+        list.innerHTML += `<div class="notif-item">${escapeHTML(n)}</div>`;
     });
 }
 
-function toggleNotifications() {
-    const dd = document.getElementById('notif-dropdown');
-    dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
-}
-
-function renderProfileContent() {
-    const area = document.getElementById('profile-content-area');
-    const list = getArticles();
-    area.innerHTML = '';
-
-    if (activeProfileTab === 'published') {
-        const myStories = list.filter(a => a.author === currentUsername);
-        if (myStories.length === 0) {
-            area.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">You haven\'t published any stories yet.</div>';
-            return;
-        }
-        myStories.forEach(art => {
-            area.innerHTML += buildCardHTML(art);
-        });
-    } else {
-        const bookmarkedArticles = list.filter(a => bookmarks.includes(a.id));
-        if (bookmarkedArticles.length === 0) {
-            area.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">No bookmarked articles found.</div>';
-            return;
-        }
-        bookmarkedArticles.forEach(art => {
-            area.innerHTML += buildCardHTML(art);
-        });
-    }
-}
-
-function switchProfileTab(tab, el) {
-    activeProfileTab = tab;
-    document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    renderProfileContent();
-}
-
-function closeArticleReader() { document.getElementById('reader-modal').style.display = 'none'; }
-function openPublisher() { document.getElementById('publisher-modal').style.display = 'block'; }
-function closePublisher() { document.getElementById('publisher-modal').style.display = 'none'; }
-
-function saveNewArticle() {
-    const title = document.getElementById('p-title').value;
-    const artist = document.getElementById('p-artist').value;
-    const category = document.getElementById('p-category').value;
-    const snippet = document.getElementById('p-snippet').value;
-    const content = document.getElementById('p-content').value;
-
-    if (!title || !snippet || !content) {
-        alert("Please complete required fields.");
-        return;
-    }
-
-    const newArt = {
-        id: 'art-' + Date.now(),
-        title,
-        artist: artist || 'Trending',
-        category,
-        imageUrl: publisherImageBase64,
-        snippet,
-        content: content.replace(/\n/g, '<br>'),
-        author: currentUsername,
-        likes: 0,
-        comments: []
-    };
-
-    const list = getArticles();
-    list.unshift(newArt);
-    saveArticles(list);
-
-    document.getElementById('p-title').value = '';
-    document.getElementById('p-artist').value = '';
-    document.getElementById('p-snippet').value = '';
-    document.getElementById('p-content').value = '';
-    document.getElementById('p-file').value = '';
-    publisherImageBase64 = '';
-
-    closePublisher();
-}
-
-loadUserData();
-updateProfileDisplay();
-renderFeed();
-updateLeaderboard();
+window.onload = function() {
+    renderFeed();
+    updateLeaderboard();
+};
 </script>
-
 </body>
 </html>
