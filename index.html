@@ -579,25 +579,28 @@
         <button class="btn-back" onclick="closeTop100Modal()">← Back</button>
         
         <div class="reader-logo-banner">
-            <span class="brand-logo" style="font-size:16px;">West<span style="color:#ffd700;">Pulse</span></span>
-            <span class="reader-logo-tag">Verified Publisher Edition</span>
-        </div>
+  const auth = typeof firebase !== 'undefined' ? firebase.auth() : null;
+if (auth) {
+  auth.getRedirectResult()
+    .then((result) => {
+      // User signed in successfully
+      if (result && result.user) {
+        const user = result.user;
+        currentUsername = user.displayName || 'User';
+        currentUserAvatar = user.photoURL || '';
+        userAvatarsMap[currentUsername] = currentUserAvatar;
+        const authBtn = document.getElementById('auth-btn');
+        if (authBtn) authBtn.innerText = '✓ ' + currentUsername;
+        updateProfileDisplay();
+        loadUserData();
+        renderFeed();
+      }
+    })
+    .catch((error) => {
+      console.error("Auth redirect error:", error);
+    });
+}
 
-        <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 16px; color: var(--accent-gold);">Top 100 Live Artistes Ranks</h2>
-        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">Real-time ranking of top artists based on current community traction, published mentions, and engagement scores.</p>
-        
-        <div id="full-top100-list"></div>
-    </div>
-</div>
-
-<!-- Article Reader & Comments Modal -->
-<div class="modal-screen" id="reader-modal">
-    <div class="container">
-        <button class="btn-back" onclick="closeArticleReader()">← Back</button>
-        
-        <div class="reader-logo-banner">
-            <span class="brand-logo" style="font-size:16px;">West<span style="color:#ffd700;">Pulse</span></span>
-            <span class="reader-logo-tag">Verified Publisher Edition</span>
         </div>
 
         <div id="reader-body"></div>
