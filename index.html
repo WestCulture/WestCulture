@@ -579,28 +579,25 @@
         <button class="btn-back" onclick="closeTop100Modal()">← Back</button>
         
         <div class="reader-logo-banner">
-  const auth = typeof firebase !== 'undefined' ? firebase.auth() : null;
-if (auth) {
-  auth.getRedirectResult()
-    .then((result) => {
-      // User signed in successfully
-      if (result && result.user) {
-        const user = result.user;
-        currentUsername = user.displayName || 'User';
-        currentUserAvatar = user.photoURL || '';
-        userAvatarsMap[currentUsername] = currentUserAvatar;
-        const authBtn = document.getElementById('auth-btn');
-        if (authBtn) authBtn.innerText = '✓ ' + currentUsername;
-        updateProfileDisplay();
-        loadUserData();
-        renderFeed();
-      }
-    })
-    .catch((error) => {
-      console.error("Auth redirect error:", error);
-    });
-}
+            <span class="brand-logo" style="font-size:16px;">West<span style="color:#ffd700;">Pulse</span></span>
+            <span class="reader-logo-tag">Verified Publisher Edition</span>
+        </div>
 
+        <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 16px; color: var(--accent-gold);">Top 100 Live Artistes Ranks</h2>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">Real-time ranking of top artists based on current community traction, published mentions, and engagement scores.</p>
+        
+        <div id="full-top100-list"></div>
+    </div>
+</div>
+
+<!-- Article Reader & Comments Modal -->
+<div class="modal-screen" id="reader-modal">
+    <div class="container">
+        <button class="btn-back" onclick="closeArticleReader()">← Back</button>
+        
+        <div class="reader-logo-banner">
+            <span class="brand-logo" style="font-size:16px;">West<span style="color:#ffd700;">Pulse</span></span>
+            <span class="reader-logo-tag">Verified Publisher Edition</span>
         </div>
 
         <div id="reader-body"></div>
@@ -706,52 +703,22 @@ if (auth) {
 </div>
 
 <script>
-// Import the functions you need from the SDKs you need
-// (Integrated with Firebase compat & runtime config fallbacks)
+// Load configuration securely from runtime environment variables (Netlify injection fallback support)
 const firebaseConfig = {
-  apiKey: "AIzaSyAroE0Wl8NuuCVSYPR7CYNTmSk-C3fg8U4",
-  authDomain: "westpulseng.firebaseapp.com",
-  projectId: "westpulseng",
-  storageBucket: "westpulseng.firebasestorage.app",
-  messagingSenderId: "137100091339",
-  appId: "1:137100091339:web:af708da7667203d23de04e",
-  measurementId: "G-ZDWF1G0RWB"
+    apiKey: window.env?.FIREBASE_API_KEY || "AIzaSyAlI8WcqYVWE1EbMO5XxQuyExnBNJ3AS2I",
+    authDomain: window.env?.FIREBASE_AUTH_DOMAIN || "westculture-9d558.firebaseapp.com",
+    projectId: window.env?.FIREBASE_PROJECT_ID || "westculture-9d558",
+    storageBucket: window.env?.FIREBASE_STORAGE_BUCKET || "westculture-9d558.firebasestorage.app",
+    messagingSenderId: window.env?.FIREBASE_MESSAGING_SENDER_ID || "82084479264",
+    appId: window.env?.FIREBASE_APP_ID || "1:82084479264:web:9ef6b5e187ea6560429745"
 };
-
-let firebaseApp = null;
-let firebaseAuth = null;
-if (typeof firebase !== 'undefined') { 
-    firebaseApp = firebase.initializeApp(firebaseConfig); 
-    firebaseAuth = firebase.auth();
-}
+if (typeof firebase !== 'undefined') { firebase.initializeApp(firebaseConfig); }
 
 const SUPABASE_URL = window.env?.SUPABASE_URL || 'https://rjayykpxyvhospmhlxzf.supabase.co';
 const SUPABASE_ANON_KEY = window.env?.SUPABASE_ANON_KEY || 'sb_publishable_MoXDi4w-vYWl11Jark0ZwA_iPMYomK4';
 let supabaseClient = null;
 if (typeof supabase !== 'undefined') {
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-}
-
-const auth = typeof firebase !== 'undefined' ? firebase.auth() : null;
-if (auth) {
-  getRedirectResult(auth)
-    .then((result) => {
-      // User signed in successfully
-      if (result && result.user) {
-        const user = result.user;
-        currentUsername = user.displayName || 'User';
-        currentUserAvatar = user.photoURL || '';
-        userAvatarsMap[currentUsername] = currentUserAvatar;
-        const authBtn = document.getElementById('auth-btn');
-        if (authBtn) authBtn.innerText = '✓ ' + currentUsername;
-        updateProfileDisplay();
-        loadUserData();
-        renderFeed();
-      }
-    })
-    .catch((error) => {
-      console.error("Auth redirect error:", error);
-    });
 }
 
 /**
@@ -943,12 +910,15 @@ function toggleSidebar() {
 }
 
 function handleGoogleSignIn() {
-    if (!firebaseAuth) {
-        alert('Firebase Auth not initialized.');
-        return;
-    }
     const provider = new firebase.auth.GoogleAuthProvider();
-    firebaseAuth.signInWithRedirect(provider).catch(err => alert(err.message));
+    firebase.auth().signInWithPopup(provider).then((result) => {
+        currentUsername = result.user.displayName || 'User';
+        currentUserAvatar = result.user.photoURL || '';
+        userAvatarsMap[currentUsername] = currentUserAvatar;
+        document.getElementById('auth-btn').innerText = '✓ ' + currentUsername;
+        updateProfileDisplay();
+        loadUserData();
+    }).catch(err => alert(err.message));
 }
 
 function updateProfileDisplay() {
@@ -1778,27 +1748,6 @@ window.onload = function() {
     renderFeed();
     updateLeaderboard();
 };
-
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    // User is signed in
-    currentUsername = user.displayName || 'User';
-    currentUserAvatar = user.photoURL || '';
-    userAvatarsMap[currentUsername] = currentUserAvatar;
-    
-    const authBtn = document.getElementById('auth-btn');
-    if (authBtn) authBtn.innerText = '✓ ' + currentUsername;
-    
-    updateProfileDisplay();
-    loadUserData();
-    renderFeed();
-  } else {
-    // User is signed out
-    const authBtn = document.getElementById('auth-btn');
-    if (authBtn) authBtn.innerText = 'Sign In';
-  }
-});
-
 </script>
 </body>
 </html>
