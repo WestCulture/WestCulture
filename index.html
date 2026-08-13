@@ -1745,9 +1745,50 @@ function addNotification(msg) {
 }
 
 window.onload = function() {
-    renderFeed();
-    updateLeaderboard();
+  renderFeed();
+  updateLeaderboard();
 };
+
+function handleGoogleSignIn() {
+  const auth = firebase.auth();
+  const provider = new firebase.auth.GoogleAuthProvider();
+
+  auth.signInWithPopup(provider)
+    .then((result) => {
+      const user = result.user;
+      currentUsername = user.displayName || 'User';
+      currentUserAvatar = user.photoURL || '';
+      userAvatarsMap[currentUsername] = currentUserAvatar;
+
+      const authBtn = document.getElementById('auth-btn');
+      if (authBtn) authBtn.innerText = '✓ ' + currentUsername;
+
+      updateProfileDisplay();
+      loadUserData();
+      renderFeed();
+    })
+    .catch((error) => {
+      console.error("Popup Sign-In Error:", error);
+      alert("Sign-in failed: " + error.message);
+    });
+}
+
+firebase.auth().onAuthStateChanged((user) => {
+  const authBtn = document.getElementById('auth-btn');
+  if (user) {
+    currentUsername = user.displayName || 'User';
+    currentUserAvatar = user.photoURL || '';
+    userAvatarsMap[currentUsername] = currentUserAvatar;
+    
+    if (authBtn) authBtn.innerText = '✓ ' + currentUsername;
+    updateProfileDisplay();
+    loadUserData();
+    renderFeed();
+  } else {
+    if (authBtn) authBtn.innerText = 'Sign In';
+  }
+});
+
 </script>
 </body>
 </html>
