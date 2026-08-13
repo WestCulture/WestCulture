@@ -923,7 +923,8 @@ function handleGoogleSignIn() {
         return;
     }
     const provider = new firebase.auth.GoogleAuthProvider();
-    firebaseAuth.signInWithRedirect(provider).catch(err => alert(err.message));
+    // Use redirect for mobile compatibility
+    auth.signInWithRedirect(provider).catch(err => alert(err.message));
 }
 
 // Handle return from Firebase Google Redirect login
