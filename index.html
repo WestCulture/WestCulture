@@ -525,7 +525,7 @@
         </div>
         <div class="form-group">
             <label>Profile Picture (Cloud Storage)</label>
-            <input type="file" id="edit-avatar-file" accept="image/*">
+            <input type="file" id="edit-avatar-file" accept="image/*" onchange="handleEditAvatarUpload(this)">
         </div>
         <button class="btn-primary-action" onclick="saveProfileChanges()">Save Changes</button>
     </div>
@@ -711,9 +711,6 @@ function withTimeout(promise, ms, label) {
     ]);
 }
 
-/**
- * Data URL first (never hangs). Optional cloud with timeout.
- */
 async function uploadFileToCloudStorage(file, folder = 'uploads') {
     if (!file) return '';
 
@@ -810,6 +807,7 @@ let activeArticleId = null;
 let currentUsername = 'Guest User';
 let currentUserBio = 'WestPulse Elite Contributor';
 let currentUserAvatar = '';
+let currentUserEmail = '';
 let publisherImageUrl = '';
 let publisherImageUploading = false;
 let commentImageUrl = '';
@@ -856,6 +854,7 @@ function switchTab(tabName) {
         document.getElementById('nav-btn-profile').classList.add('active');
         loadUserData();
         renderProfileContent();
+        updateProfileDisplay();
     }
 }
 
@@ -894,44 +893,131 @@ function toggleSidebar() {
     ov.style.display = isOpen ? 'none' : 'block';
 }
 
+/* ========== FIXED AUTH ========== */
+function applyUser(user) {
+    const authBtn = document.getElementById('auth-btn');
+    if (!user) {
+        currentUsername = 'Guest User';
+        currentUserAvatar = '';
+        currentUserEmail = '';
+        currentUserBio = 'WestPulse Elite Contributor';
+        if (authBtn) {
+            authBtn.innerText = 'Sign In';
+            authBtn.onclick = handleGoogleSignIn;
+            authBtn.style.background = '#ffd700';
+            authBtn.style.color = '#000';
+        }
+        updateProfileDisplay();
+        loadUserData();
+        return;
+    }
+
+    currentUsername = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+    currentUserAvatar = user.photoURL || '';
+    currentUserEmail = user.email || '';
+    userAvatarsMap[currentUsername] = currentUserAvatar;
+
+    // Restore custom bio if saved for this user
+    try {
+        const savedBio = localStorage.getItem('westpulse_bio_' + currentUsername);
+        if (savedBio) currentUserBio = savedBio;
+    } catch (e) {}
+
+    if (authBtn) {
+        const shortName = currentUsername.split(' ')[0] || currentUsername;
+        authBtn.innerText = '✓ ' + shortName;
+        authBtn.onclick = handleSignOut;
+        authBtn.title = 'Click to sign out';
+        authBtn.style.background = '#22c55e';
+        authBtn.style.color = '#000';
+    }
+
+    updateProfileDisplay();
+    loadUserData();
+
+    // Refresh profile tab content if currently open
+    if (document.getElementById('profile-view') && document.getElementById('profile-view').classList.contains('active')) {
+        renderProfileContent();
+    }
+}
+
 function handleGoogleSignIn() {
     if (!firebaseAuth) {
-        alert('Firebase Auth not initialized.');
+        alert('Firebase Auth not initialized. Check console.');
         return;
     }
     const provider = new firebase.auth.GoogleAuthProvider();
-    firebaseAuth.signInWithRedirect(provider).catch(err => alert(err.message));
+    provider.setCustomParameters({ prompt: 'select_account' });
+
+    // Prefer popup (works better on most single-page sites)
+    firebaseAuth.signInWithPopup(provider)
+        .then((result) => {
+            if (result && result.user) {
+                applyUser(result.user);
+            }
+        })
+        .catch((err) => {
+            console.error('Popup sign-in error:', err);
+            // Fallback to redirect if popup is blocked
+            if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
+                firebaseAuth.signInWithRedirect(provider).catch(e => {
+                    alert('Sign-in failed: ' + (e.message || e));
+                });
+            } else if (err.code === 'auth/popup-closed-by-user') {
+                // user closed popup — ignore
+            } else {
+                alert('Sign-in failed: ' + (err.message || err.code || err));
+            }
+        });
 }
 
-if (firebaseAuth) {
-    firebaseAuth.getRedirectResult()
-      .then((result) => {
-        if (result && result.user) {
-          const user = result.user;
-          currentUsername = user.displayName || 'User';
-          currentUserAvatar = user.photoURL || '';
-          userAvatarsMap[currentUsername] = currentUserAvatar;
-          const authBtn = document.getElementById('auth-btn');
-          if (authBtn) authBtn.innerText = '✓ ' + currentUsername;
-          updateProfileDisplay();
-          loadUserData();
-        }
-      })
-      .catch((error) => {
-        console.error("Auth error:", error.message);
-      });
+function handleSignOut() {
+    if (!firebaseAuth) return;
+    if (!confirm('Sign out of WestPulse?')) return;
+    firebaseAuth.signOut()
+        .then(() => {
+            applyUser(null);
+            alert('Signed out successfully.');
+        })
+        .catch((err) => {
+            console.error(err);
+            alert('Sign out failed: ' + err.message);
+        });
 }
+
+// Listen for auth state on every page load (this is the key fix)
+if (firebaseAuth) {
+    firebaseAuth.onAuthStateChanged((user) => {
+        applyUser(user || null);
+    });
+
+    // Still handle redirect result (for fallback path)
+    firebaseAuth.getRedirectResult()
+        .then((result) => {
+            if (result && result.user) {
+                applyUser(result.user);
+            }
+        })
+        .catch((error) => {
+            console.error('Auth redirect error:', error.message);
+        });
+}
+/* ========== END FIXED AUTH ========== */
 
 function updateProfileDisplay() {
-    document.getElementById('profile-name').innerText = currentUsername;
-    document.getElementById('profile-bio').innerText = currentUserBio;
+    const nameEl = document.getElementById('profile-name');
+    const bioEl = document.getElementById('profile-bio');
     const initialEl = document.getElementById('profile-initial');
-    if (currentUserAvatar) {
-        initialEl.style.backgroundImage = `url('${currentUserAvatar}')`;
-        initialEl.innerText = '';
-    } else {
-        initialEl.style.backgroundImage = 'none';
-        initialEl.innerText = currentUsername.charAt(0).toUpperCase();
+    if (nameEl) nameEl.innerText = currentUsername;
+    if (bioEl) bioEl.innerText = currentUserBio;
+    if (initialEl) {
+        if (currentUserAvatar) {
+            initialEl.style.backgroundImage = `url('${currentUserAvatar}')`;
+            initialEl.innerText = '';
+        } else {
+            initialEl.style.backgroundImage = 'none';
+            initialEl.innerText = currentUsername.charAt(0).toUpperCase();
+        }
     }
     userAvatarsMap[currentUsername] = currentUserAvatar;
 }
@@ -955,7 +1041,6 @@ function showPublisherPreview(url) {
     }
 }
 
-/* FIXED: data URL first — never hangs on cloud */
 async function handlePublisherImageUpload(input) {
     const file = input.files && input.files[0];
     publisherImageUrl = '';
@@ -975,7 +1060,6 @@ async function handlePublisherImageUpload(input) {
         setPublisherImageStatus('Image ready', 'ready');
         showPublisherPreview(dataUrl);
 
-        // Optional cloud upgrade in background (non-blocking)
         uploadFileToCloudStorage(file, 'banners').then((cloudUrl) => {
             if (cloudUrl && !cloudUrl.startsWith('data:')) {
                 publisherImageUrl = cloudUrl;
@@ -993,14 +1077,22 @@ async function handlePublisherImageUpload(input) {
 }
 
 async function handleEditAvatarUpload(input) {
-    const file = input.files[0];
-    if (file) {
-        editAvatarUrl = await uploadFileToCloudStorage(file, 'avatars');
+    const file = input.files && input.files[0];
+    if (!file) return;
+    try {
+        editAvatarUrl = await fileToDataURL(file);
+        // optional cloud upgrade
+        uploadFileToCloudStorage(file, 'avatars').then((url) => {
+            if (url && !url.startsWith('data:')) editAvatarUrl = url;
+        }).catch(() => {});
+    } catch (e) {
+        console.warn(e);
+        alert('Could not read image');
     }
 }
 
 function openEditProfileModal() {
-    document.getElementById('edit-name-input').value = currentUsername;
+    document.getElementById('edit-name-input').value = currentUsername === 'Guest User' ? '' : currentUsername;
     document.getElementById('edit-bio-input').value = currentUserBio;
     editAvatarUrl = currentUserAvatar;
     document.getElementById('edit-profile-modal').style.display = 'block';
@@ -1015,7 +1107,12 @@ function saveProfileChanges() {
     const newName = document.getElementById('edit-name-input').value.trim();
     const newBio = document.getElementById('edit-bio-input').value.trim();
     if (newName) currentUsername = newName;
-    if (newBio) currentUserBio = newBio;
+    if (newBio) {
+        currentUserBio = newBio;
+        try {
+            localStorage.setItem('westpulse_bio_' + currentUsername, currentUserBio);
+        } catch (e) {}
+    }
     if (editAvatarUrl) currentUserAvatar = editAvatarUrl;
     userAvatarsMap[currentUsername] = currentUserAvatar;
     updateProfileDisplay();
@@ -1649,7 +1746,6 @@ function closePublisher() {
     document.body.style.overflow = '';
 }
 
-/* FIXED PUBLISH — never waits on hanging cloud upload */
 async function saveNewArticle() {
     const publishBtn = document.getElementById('publishBtn');
     try {
@@ -1684,7 +1780,6 @@ async function saveNewArticle() {
         let finalImageUrl = publisherImageUrl || '';
         const selectedFile = fileEl && fileEl.files && fileEl.files[0] ? fileEl.files[0] : null;
 
-        // Fast local read only — no cloud wait
         if (selectedFile && !finalImageUrl) {
             setPublisherImageStatus('Preparing image…');
             try {
