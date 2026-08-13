@@ -733,6 +733,7 @@ const auth = typeof firebase !== 'undefined' ? firebase.auth() : null;
 if (auth) {
   getRedirectResult(auth)
     .then((result) => {
+      // User signed in successfully
       if (result && result.user) {
         const user = result.user;
         currentUsername = user.displayName || 'User';
@@ -742,10 +743,11 @@ if (auth) {
         if (authBtn) authBtn.innerText = '✓ ' + currentUsername;
         updateProfileDisplay();
         loadUserData();
+        renderFeed();
       }
     })
     .catch((error) => {
-      console.error(error);
+      console.error("Auth redirect error:", error);
     });
 }
 
