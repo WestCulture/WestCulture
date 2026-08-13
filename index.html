@@ -43,7 +43,6 @@
 
         .container { max-width: 560px; width: 100%; margin: 0 auto; padding: 0 16px; }
 
-        /* Navigation Bar Header */
         .navbar-header { 
             display: flex; 
             align-items: center; 
@@ -69,7 +68,6 @@
         .nav-right-actions { display: flex; align-items: center; gap: 8px; }
         .notification-badge { position: absolute; top: -4px; right: -4px; background: red; color: white; font-size: 9px; font-weight: 800; padding: 2px 5px; border-radius: 10px; display: none; }
 
-        /* FIXED BOTTOM NAVIGATION */
         .bottom-nav { 
             position: fixed; 
             bottom: 0; 
@@ -100,7 +98,6 @@
         .bottom-nav-item.active { color: var(--accent-gold); }
         .bottom-nav-item svg { width: 20px; height: 20px; fill: currentColor; }
 
-        /* Standard Published Post Card */
         .post-card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
@@ -109,7 +106,6 @@
             margin-bottom: 20px;
         }
 
-        /* External Media Live Card */
         .live-media-card {
             background: #16181d;
             border: 1px solid #3b82f6;
@@ -151,7 +147,6 @@
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
-        /* Engagement Toolbar & Buttons */
         .engagement-bar { 
             display: flex; 
             align-items: center; 
@@ -169,7 +164,6 @@
         .action-btn.liked svg { fill: var(--accent-gold); }
         .action-btn.bookmarked svg { fill: var(--accent-gold); }
 
-        /* THEME-SYNCED DELETE BUTTON STYLE */
         .action-btn.delete-btn {
             color: var(--site-theme-color);
             background: rgba(255, 215, 0, 0.08);
@@ -288,7 +282,6 @@
         .card-title { font-size: 20px; font-weight: 800; line-height: 1.25; color: var(--text-primary); margin-bottom: 8px; }
         .card-snippet { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
 
-        /* MODAL FIX: Applied solid background color (#050505) to completely cover background feed */
         .modal-screen { 
             display: none; 
             background: #050505; 
@@ -317,9 +310,7 @@
             border-radius: 8px;
             margin-bottom: 20px;
         }
-        .reader-logo-banner .brand-logo {
-            font-size: 16px;
-        }
+        .reader-logo-banner .brand-logo { font-size: 16px; }
         .reader-logo-tag {
             font-size: 10px;
             text-transform: uppercase;
@@ -376,11 +367,15 @@
         label { display: block; font-size: 11px; text-transform: uppercase; color: var(--accent-gold); font-weight: 700; margin-bottom: 6px; letter-spacing: 1px; }
         input, select, textarea { width: 100%; padding: 12px; background: #161616; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; outline: none; }
         .btn-primary-action { width: 100%; background: var(--accent-gold); color: #000; border: none; padding: 14px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; margin-top: 10px; }
+        .btn-primary-action:disabled { opacity: 0.6; cursor: not-allowed; }
+        #publisher-image-status { font-size: 12px; color: var(--text-secondary); margin-top: 6px; min-height: 18px; }
+        #publisher-image-status.ready { color: #4ade80; }
+        #publisher-image-status.error { color: #f87171; }
+        #publisher-image-preview { max-width: 100%; max-height: 160px; border-radius: 8px; margin-top: 8px; display: none; border: 1px solid var(--border-color); object-fit: cover; }
     </style>
 </head>
 <body>
 
-<!-- Sidebar Navigation Drawer -->
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
@@ -413,18 +408,12 @@
     </div>
 </div>
 
-<!-- Navigation Bar Header Integrated -->
 <div class="container">
     <nav class="navbar-header">
-      
-      <!-- Left Side: Menu Toggle + Logo + Brand Name -->
       <div style="display: flex; align-items: center; gap: 12px;">
-        <!-- Menu Button -->
         <button id="menu-toggle" onclick="toggleSidebar()" style="background: none; border: none; cursor: pointer; color: white; display: flex; align-items: center;">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
         </button>
-
-        <!-- WP Gold-Accented Logo Icon -->
         <div class="header-logo-icon" style="display: flex; align-items: center;">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="32" height="32" style="border-radius: 8px;">
             <rect width="120" height="120" fill="#0b131a" rx="24"/>
@@ -434,16 +423,11 @@
             </g>
           </svg>
         </div>
-
-        <!-- Brand Text -->
         <span class="brand-title" onclick="switchTab('feed')" style="font-size: 20px; font-weight: bold; color: white; letter-spacing: -0.5px; cursor: pointer;">
           West<span style="color: #ffd700;">Pulse</span>
         </span>
       </div>
-
-      <!-- Right Side: Notifications & Sign In -->
       <div style="display: flex; align-items: center; gap: 10px;">
-        <!-- Notification Bell -->
         <div style="position: relative;">
             <button class="notification-btn" onclick="toggleNotifications()" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 8px; cursor: pointer; color: white;">
               🔔 <span class="notification-badge" id="notif-badge">0</span>
@@ -455,16 +439,13 @@
                 </div>
             </div>
         </div>
-        <!-- Sign In Button -->
         <button class="sign-in-btn" id="auth-btn" onclick="handleGoogleSignIn()" style="background: #ffd700; color: #000; border: none; padding: 8px 16px; border-radius: 12px; font-weight: bold; cursor: pointer;">
           Sign In
         </button>
       </div>
-
     </nav>
 </div>
 
-<!-- Bottom Navigation Bar -->
 <div class="bottom-nav">
     <button class="bottom-nav-item active" id="nav-btn-feed" onclick="switchTab('feed')">
         <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -480,7 +461,6 @@
     </button>
 </div>
 
-<!-- View 1: Main Dashboard & News Feed -->
 <div class="container app-view active" id="feed-view">
     <div class="welcome-banner">
         <div class="welcome-title">Welcome to the Inner Circle</div>
@@ -504,23 +484,19 @@
     <div id="article-feed"></div>
 </div>
 
-<!-- View 2: Search Explorer Tab -->
 <div class="container app-view" id="search-view">
     <div class="search-toolbar">
         <input type="text" id="search-bar" class="search-input" placeholder="Search stories, artists, or topics..." oninput="handleSearch(this.value)">
     </div>
-
     <div class="categories" style="margin-bottom: 24px;">
         <div class="cat-chip active" onclick="filterSearchCategory('All', this)">All</div>
         <div class="cat-chip" onclick="filterSearchCategory('Trending', this)">Trending</div>
         <div class="cat-chip" onclick="filterSearchCategory('Sport', this)">Sport</div>
         <div class="cat-chip" onclick="filterSearchCategory('Entertainment', this)">Entertainment</div>
     </div>
-
     <div id="search-results-feed"></div>
 </div>
 
-<!-- View 3: Profile View Tab -->
 <div class="container app-view" id="profile-view">
     <div class="profile-header">
         <div class="profile-avatar" id="profile-initial">G</div>
@@ -528,21 +504,17 @@
         <p id="profile-bio" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">WestPulse Elite Contributor</p>
         <button class="sign-in-btn" style="background:var(--bg-elevated); border:1px solid var(--border-color); color:var(--text-primary); font-size:11px;" onclick="openEditProfileModal()">Edit Profile</button>
     </div>
-
     <div class="profile-tabs">
         <button class="profile-tab active" onclick="switchProfileTab('published', this)">My Published Stories</button>
         <button class="profile-tab" onclick="switchProfileTab('bookmarks', this)">Bookmarked Articles</button>
     </div>
-
     <div id="profile-content-area"></div>
 </div>
 
-<!-- Edit Profile Modal -->
 <div class="modal-screen" id="edit-profile-modal">
     <div class="container">
         <button class="btn-back" onclick="closeEditProfileModal()">← Cancel</button>
         <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 20px; color: var(--accent-gold);">Edit Profile</h2>
-        
         <div class="form-group">
             <label>Display Name</label>
             <input type="text" id="edit-name-input" placeholder="Your display name...">
@@ -559,7 +531,6 @@
     </div>
 </div>
 
-<!-- Public User Profile Modal -->
 <div class="modal-screen" id="user-profile-modal">
     <div class="container">
         <button class="btn-back" id="up-back-btn" onclick="closeUserProfileModal()">← Back</button>
@@ -573,41 +544,32 @@
     </div>
 </div>
 
-<!-- Top 100 Live Ranks Full Modal -->
 <div class="modal-screen" id="top100-modal">
     <div class="container">
         <button class="btn-back" onclick="closeTop100Modal()">← Back</button>
-        
         <div class="reader-logo-banner">
             <span class="brand-logo" style="font-size:16px;">West<span style="color:#ffd700;">Pulse</span></span>
             <span class="reader-logo-tag">Verified Publisher Edition</span>
         </div>
-
         <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 16px; color: var(--accent-gold);">Top 100 Live Artistes Ranks</h2>
         <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">Real-time ranking of top artists based on current community traction, published mentions, and engagement scores.</p>
-        
         <div id="full-top100-list"></div>
     </div>
 </div>
 
-<!-- Article Reader & Comments Modal -->
 <div class="modal-screen" id="reader-modal">
     <div class="container">
         <button class="btn-back" onclick="closeArticleReader()">← Back</button>
-        
         <div class="reader-logo-banner">
             <span class="brand-logo" style="font-size:16px;">West<span style="color:#ffd700;">Pulse</span></span>
             <span class="reader-logo-tag">Verified Publisher Edition</span>
         </div>
-
         <div id="reader-body"></div>
-        
         <div class="tiktok-comments-container">
             <div class="tiktok-comment-header" id="comments-count-title">Comments (0)</div>
             <div id="comments-list"></div>
         </div>
     </div>
-
     <div class="tiktok-input-bar">
         <div class="tiktok-input-inner">
             <input type="text" id="comment-input" class="tiktok-input" placeholder="Add comment...">
@@ -622,12 +584,10 @@
     </div>
 </div>
 
-<!-- Publisher Modal -->
 <div class="modal-screen" id="publisher-modal">
     <div class="container">
         <button class="btn-back" onclick="closePublisher()">← Cancel</button>
         <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 20px; color: var(--accent-gold);">Create Post</h2>
-        
         <div class="form-group">
             <label>Headline</label>
             <input type="text" id="p-title" placeholder="Enter headline...">
@@ -647,8 +607,10 @@
             </select>
         </div>
         <div class="form-group">
-            <label>Upload Banner Image (Direct to Cloud Storage)</label>
+            <label>Upload Banner Image</label>
             <input type="file" id="p-file" accept="image/*" onchange="handlePublisherImageUpload(this)">
+            <div id="publisher-image-status"></div>
+            <img id="publisher-image-preview" alt="Banner preview">
         </div>
         <div class="form-group">
             <label>Snippet</label>
@@ -662,12 +624,10 @@
     </div>
 </div>
 
-<!-- Settings Modal -->
 <div class="modal-screen" id="settings-modal">
     <div class="container">
         <button class="btn-back" onclick="closeSettingsModal()">← Back</button>
         <h2 style="font-size: 22px; font-weight: 800; margin-bottom: 20px; color: var(--accent-gold);">Platform Settings</h2>
-        
         <div class="form-group">
             <label>Display Theme Mode</label>
             <select id="setting-theme" onchange="updateSettingsTheme(this.value)">
@@ -686,7 +646,6 @@
     </div>
 </div>
 
-<!-- Terms, Privacy & Help Modal -->
 <div class="modal-screen" id="info-modal">
     <div class="container">
         <button class="btn-back" onclick="closeInfoModal()">← Back</button>
@@ -694,7 +653,6 @@
     </div>
 </div>
 
-<!-- Post Detail Modal Overlay -->
 <div id="postModal" class="modal-overlay" style="display: none;">
     <div class="modal-content">
         <button class="modal-close" onclick="closePostDetail()">&times;</button>
@@ -703,8 +661,6 @@
 </div>
 
 <script>
-// Import the functions you need from the SDKs you need
-// (Integrated with Firebase compat & runtime config fallbacks)
 const firebaseConfig = {
   apiKey: "AIzaSyAroE0Wl8NuuCVSYPR7CYNTmSk-C3fg8U4",
   authDomain: "westpulseng.firebaseapp.com",
@@ -717,84 +673,106 @@ const firebaseConfig = {
 
 let firebaseApp = null;
 let firebaseAuth = null;
-if (typeof firebase !== 'undefined') { 
-    firebaseApp = firebase.initializeApp(firebaseConfig); 
-    firebaseAuth = firebase.auth();
+try {
+    if (typeof firebase !== 'undefined') { 
+        firebaseApp = firebase.initializeApp(firebaseConfig); 
+        firebaseAuth = firebase.auth();
+    }
+} catch (e) {
+    console.warn('Firebase init failed:', e);
 }
 
 const SUPABASE_URL = window.env?.SUPABASE_URL || 'https://rjayykpxyvhospmhlxzf.supabase.co';
 const SUPABASE_ANON_KEY = window.env?.SUPABASE_ANON_KEY || 'sb_publishable_MoXDi4w-vYWl11Jark0ZwA_iPMYomK4';
 let supabaseClient = null;
-if (typeof supabase !== 'undefined') {
-    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+try {
+    if (typeof supabase !== 'undefined') {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+} catch (e) {
+    console.warn('Supabase init failed:', e);
+}
+
+function fileToDataURL(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result || '');
+        reader.onerror = () => reject(reader.error || new Error('Failed to read file'));
+        reader.readAsDataURL(file);
+    });
+}
+
+function withTimeout(promise, ms, label) {
+    return Promise.race([
+        promise,
+        new Promise((_, reject) =>
+            setTimeout(() => reject(new Error((label || 'Operation') + ' timed out')), ms)
+        )
+    ]);
 }
 
 /**
- * Universal Cloud Storage Upload Helper
- * Pushes uploaded files to Firebase Storage (or Supabase Storage fallback)
- * returning a public URL string instead of local Base64 strings.
+ * Data URL first (never hangs). Optional cloud with timeout.
  */
 async function uploadFileToCloudStorage(file, folder = 'uploads') {
     if (!file) return '';
+
+    let dataUrl = '';
+    try {
+        dataUrl = await fileToDataURL(file);
+    } catch (e) {
+        console.warn('Data URL conversion failed', e);
+    }
+
     const filename = `${folder}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9_.-]/g, '_')}`;
 
-    // Try Firebase Storage first if initialized
     if (typeof firebase !== 'undefined' && firebase.storage) {
         try {
             const storageRef = firebase.storage().ref();
             const fileRef = storageRef.child(filename);
-            const snapshot = await fileRef.put(file);
-            const downloadURL = await snapshot.ref.getDownloadURL();
-            return downloadURL;
+            const snapshot = await withTimeout(fileRef.put(file), 8000, 'Firebase upload');
+            const downloadURL = await withTimeout(snapshot.ref.getDownloadURL(), 5000, 'Firebase URL');
+            if (downloadURL) return downloadURL;
         } catch (fbErr) {
-            console.warn('Firebase Storage upload failed, attempting Supabase Storage fallback...', fbErr);
+            console.warn('Firebase Storage skipped:', fbErr.message || fbErr);
         }
     }
 
-    // Fallback to Supabase Storage if available
     if (supabaseClient) {
         try {
-            const { data, error } = await supabaseClient.storage
-                .from('westpulse-media')
-                .upload(filename, file);
-            if (error) throw error;
+            const uploadResult = await withTimeout(
+                supabaseClient.storage.from('westpulse-media').upload(filename, file),
+                8000,
+                'Supabase upload'
+            );
+            if (uploadResult.error) throw uploadResult.error;
             const { data: publicData } = supabaseClient.storage
                 .from('westpulse-media')
                 .getPublicUrl(filename);
-            if (publicData && publicData.publicUrl) {
-                return publicData.publicUrl;
-            }
+            if (publicData && publicData.publicUrl) return publicData.publicUrl;
         } catch (sbErr) {
-            console.warn('Supabase Storage upload failed, falling back to secure object URL link.', sbErr);
+            console.warn('Supabase Storage skipped:', sbErr.message || sbErr);
         }
     }
 
-    // Final fallback: generate temporary object URL (or handle offline mode gracefully)
-    return URL.createObjectURL(file);
+    return dataUrl;
 }
 
 function timeAgo(date) {
     if (!date) return 'Just now';
     const timestamp = typeof date === 'number' ? date : new Date(date).getTime();
     if (isNaN(timestamp)) return 'Just now';
-
     const seconds = Math.floor((Date.now() - timestamp) / 1000);
     if (seconds < 60) return 'Just now';
-
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) return `${minutes}m ago`;
-
     const hours = Math.floor(minutes / 60);
     if (hours < 24) return `${hours}h ago`;
-
     const days = Math.floor(hours / 24);
     if (days < 30) return `${days}d ago`;
-
     const months = Math.floor(days / 30);
     if (months < 12) return `${months}mo ago`;
-
-    const years = Math.floor(months / 12);
-    return `${years}y ago`;
+    return `${Math.floor(months / 12)}y ago`;
 }
 
 function escapeHTML(str) {
@@ -833,6 +811,7 @@ let currentUsername = 'Guest User';
 let currentUserBio = 'WestPulse Elite Contributor';
 let currentUserAvatar = '';
 let publisherImageUrl = '';
+let publisherImageUploading = false;
 let commentImageUrl = '';
 let editAvatarUrl = '';
 let replyingToCommentId = null;
@@ -843,7 +822,6 @@ let likedArticles = [];
 let activeProfileTab = 'published';
 let cameFromArticleReader = false; 
 let wasSidebarOpenBeforeSettings = false; 
-
 let userAvatarsMap = {};
 
 const infoContent = {
@@ -865,7 +843,6 @@ function closeInfoModal() {
 function switchTab(tabName) {
     document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.bottom-nav-item').forEach(i => i.classList.remove('active'));
-
     if (tabName === 'feed') {
         document.getElementById('feed-view').classList.add('active');
         document.getElementById('nav-btn-feed').classList.add('active');
@@ -926,7 +903,6 @@ function handleGoogleSignIn() {
     firebaseAuth.signInWithRedirect(provider).catch(err => alert(err.message));
 }
 
-// Handle return from Firebase Google Redirect login
 if (firebaseAuth) {
     firebaseAuth.getRedirectResult()
       .then((result) => {
@@ -960,10 +936,59 @@ function updateProfileDisplay() {
     userAvatarsMap[currentUsername] = currentUserAvatar;
 }
 
+function setPublisherImageStatus(msg, type) {
+    const el = document.getElementById('publisher-image-status');
+    if (!el) return;
+    el.textContent = msg || '';
+    el.className = type || '';
+}
+
+function showPublisherPreview(url) {
+    const img = document.getElementById('publisher-image-preview');
+    if (!img) return;
+    if (url) {
+        img.src = url;
+        img.style.display = 'block';
+    } else {
+        img.removeAttribute('src');
+        img.style.display = 'none';
+    }
+}
+
+/* FIXED: data URL first — never hangs on cloud */
 async function handlePublisherImageUpload(input) {
-    const file = input.files[0];
-    if (file) {
-        publisherImageUrl = await uploadFileToCloudStorage(file, 'banners');
+    const file = input.files && input.files[0];
+    publisherImageUrl = '';
+    showPublisherPreview('');
+    if (!file) {
+        setPublisherImageStatus('');
+        publisherImageUploading = false;
+        return;
+    }
+
+    publisherImageUploading = true;
+    setPublisherImageStatus('Preparing image…');
+
+    try {
+        const dataUrl = await fileToDataURL(file);
+        publisherImageUrl = dataUrl;
+        setPublisherImageStatus('Image ready', 'ready');
+        showPublisherPreview(dataUrl);
+
+        // Optional cloud upgrade in background (non-blocking)
+        uploadFileToCloudStorage(file, 'banners').then((cloudUrl) => {
+            if (cloudUrl && !cloudUrl.startsWith('data:')) {
+                publisherImageUrl = cloudUrl;
+                showPublisherPreview(cloudUrl);
+                setPublisherImageStatus('Image ready (cloud)', 'ready');
+            }
+        }).catch(() => {});
+    } catch (e) {
+        console.warn('Image prepare error', e);
+        publisherImageUrl = '';
+        setPublisherImageStatus('Could not read image — try another file', 'error');
+    } finally {
+        publisherImageUploading = false;
     }
 }
 
@@ -992,7 +1017,6 @@ function saveProfileChanges() {
     if (newName) currentUsername = newName;
     if (newBio) currentUserBio = newBio;
     if (editAvatarUrl) currentUserAvatar = editAvatarUrl;
-
     userAvatarsMap[currentUsername] = currentUserAvatar;
     updateProfileDisplay();
     closeEditProfileModal();
@@ -1002,9 +1026,13 @@ function saveProfileChanges() {
 async function handleCommentImageUpload(input) {
     const file = input.files[0];
     if (file) {
-        commentImageUrl = await uploadFileToCloudStorage(file, 'comments');
-        document.getElementById('comment-img-preview').src = commentImageUrl;
-        document.getElementById('comment-img-preview-container').style.display = 'block';
+        try {
+            commentImageUrl = await fileToDataURL(file);
+            document.getElementById('comment-img-preview').src = commentImageUrl;
+            document.getElementById('comment-img-preview-container').style.display = 'block';
+        } catch (e) {
+            console.warn(e);
+        }
     }
 }
 
@@ -1026,19 +1054,16 @@ function getArticles() {
             articles = defaultArticles;
         }
     }
-
     articles = articles.filter(a => {
         if (!a) return false;
         const titleStr = String(a.title || '').trim().toLowerCase();
         const snippetStr = String(a.snippet || '').trim().toLowerCase();
         const contentStr = String(a.content || '').trim().toLowerCase();
-        
         if (titleStr === 'undefined' || !titleStr) return false;
         if (snippetStr === 'undefined') return false;
         if (contentStr === 'undefined') return false;
         return true;
     });
-
     localStorage.setItem('westpulse_articles_gold_v2', JSON.stringify(articles));
     return articles;
 }
@@ -1049,7 +1074,12 @@ function saveArticles(list) {
         const titleStr = String(a.title || '').trim().toLowerCase();
         return titleStr !== 'undefined' && titleStr !== '';
     });
-    localStorage.setItem('westpulse_articles_gold_v2', JSON.stringify(cleanList));
+    try {
+        localStorage.setItem('westpulse_articles_gold_v2', JSON.stringify(cleanList));
+    } catch (e) {
+        console.warn('localStorage full or blocked', e);
+        alert('Storage is full. Try a smaller image or delete old posts.');
+    }
     renderFeed();
     renderSearchFeed();
     updateLeaderboard();
@@ -1082,7 +1112,6 @@ function toggleLike(id, event) {
     const list = getArticles();
     const art = list.find(a => a.id === id);
     if (!art) return;
-
     const likedIndex = likedArticles.indexOf(id);
     if (likedIndex > -1) {
         likedArticles.splice(likedIndex, 1);
@@ -1092,7 +1121,6 @@ function toggleLike(id, event) {
         art.likes = (art.likes || 0) + 1;
         addNotification(`Your story "${art.title}" received a new like!`);
     }
-
     saveArticles(list);
     saveUserData();
 }
@@ -1106,9 +1134,7 @@ function updateLeaderboard() {
         let score = (a.likes || 0) + (a.comments ? a.comments.length * 2 : 0) + 10;
         scores[artistKey] = (scores[artistKey] || 0) + score;
     });
-
     const sortedArtists = Object.keys(scores).sort((a,b) => scores[b] - scores[a]);
-    
     const top3 = sortedArtists.slice(0, 3);
     const radar = document.getElementById('radar-list');
     if (radar) {
@@ -1130,7 +1156,6 @@ function updateLeaderboard() {
             });
         }
     }
-
     const fullListContainer = document.getElementById('full-top100-list');
     if (fullListContainer) {
         fullListContainer.innerHTML = '';
@@ -1159,7 +1184,6 @@ function openTop100Modal() {
     document.getElementById('top100-modal').style.display = 'block';
     document.body.style.overflow = 'hidden';
 }
-
 function closeTop100Modal() {
     document.getElementById('top100-modal').style.display = 'none';
     document.body.style.overflow = '';
@@ -1191,14 +1215,11 @@ function renderFeed() {
     const feed = document.getElementById('article-feed');
     if (!feed) return;
     feed.innerHTML = '';
-
     let filtered = currentFilter === 'All Feed' ? list : list.filter(a => a.category === currentFilter);
-
     if (filtered.length === 0) {
         feed.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">No stories found.</div>';
         return;
     }
-
     filtered.forEach(art => {
         feed.innerHTML += buildCardHTML(art);
     });
@@ -1209,12 +1230,10 @@ function renderSearchFeed() {
     const feed = document.getElementById('search-results-feed');
     if (!feed) return;
     feed.innerHTML = '';
-
     let filtered = list;
     if (searchCategoryFilter !== 'All') {
         filtered = filtered.filter(a => a.category === searchCategoryFilter);
     }
-
     if (searchQuery) {
         filtered = filtered.filter(a => {
             return (a.title && a.title.toLowerCase().includes(searchQuery)) ||
@@ -1222,25 +1241,22 @@ function renderSearchFeed() {
                    (a.snippet && a.snippet.toLowerCase().includes(searchQuery));
         });
     }
-
     if (filtered.length === 0) {
         feed.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">No search results found.</div>';
         return;
     }
-
     filtered.forEach(art => {
         feed.innerHTML += buildCardHTML(art);
     });
 }
 
 function buildCardHTML(art) {
-    let banner = art.imageUrl ? `<img src="${escapeHTML(art.imageUrl)}" class="card-banner">` : '';
+    let banner = art.imageUrl ? `<img src="${escapeHTML(art.imageUrl)}" class="card-banner" onerror="this.style.display='none'">` : '';
     let isBookmarked = bookmarks.includes(art.id);
     let isLiked = likedArticles.includes(art.id);
     let totalComments = art.comments && Array.isArray(art.comments) ? art.comments.reduce((acc, c) => acc + 1 + (c.replies ? c.replies.length : 0), 0) : 0;
     let postTime = timeAgo(art.createdAt);
     let safeAuthor = escapeHTML(art.author || 'Guest User');
-
     return `
         <div class="featured-card">
             ${banner}
@@ -1281,7 +1297,6 @@ function generateShareCardImage(art, callback) {
     canvas.width = 1200;
     canvas.height = 630;
     const ctx = canvas.getContext('2d');
-
     const drawContent = (img) => {
         if (img) {
             const hRatio = canvas.width / img.width;
@@ -1298,7 +1313,6 @@ function generateShareCardImage(art, callback) {
             ctx.fillStyle = bgGrad;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-
         const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
         gradient.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
         gradient.addColorStop(0.4, 'rgba(0, 0, 0, 0.2)');
@@ -1306,32 +1320,26 @@ function generateShareCardImage(art, callback) {
         gradient.addColorStop(1, 'rgba(0, 0, 0, 0.98)');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
         ctx.font = '800 36px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.fillStyle = '#ffffff';
         ctx.fillText('W', 60, 80);
         const wWidth = ctx.measureText('W').width;
         ctx.fillStyle = '#ffd700';
         ctx.fillText('estPulse', 60 + wWidth, 80);
-
         ctx.font = '700 22px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.fillStyle = '#ffd700';
         ctx.fillText((art.category || 'TRENDING').toUpperCase(), 60, 480);
-
         ctx.font = '800 48px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         ctx.fillStyle = '#ffffff';
-        
         const words = (art.title || '').split(' ');
         let line = '';
         let y = 540;
         const maxWidth = 1080;
         const lineHeight = 58;
-
         for (let n = 0; n < words.length; n++) {
             let testLine = line + words[n] + ' ';
             let metrics = ctx.measureText(testLine);
-            let testWidth = metrics.width;
-            if (testWidth > maxWidth && n > 0) {
+            if (metrics.width > maxWidth && n > 0) {
                 ctx.fillText(line, 60, y);
                 line = words[n] + ' ';
                 y += lineHeight;
@@ -1340,12 +1348,8 @@ function generateShareCardImage(art, callback) {
             }
         }
         ctx.fillText(line, 60, y);
-
-        canvas.toBlob((blob) => {
-            callback(blob);
-        }, 'image/png');
+        canvas.toBlob((blob) => callback(blob), 'image/png');
     };
-
     if (art.imageUrl) {
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -1362,28 +1366,13 @@ async function shareArticle(id, event) {
     const list = getArticles();
     const art = list.find(a => a.id === id);
     if (!art) return;
-
     generateShareCardImage(art, async (blob) => {
         const file = new File([blob], 'westpulse-post.png', { type: 'image/png' });
-        const shareData = {
-            title: art.title,
-            text: art.snippet,
-            url: window.location.href,
-            files: [file]
-        };
-
+        const shareData = { title: art.title, text: art.snippet, url: window.location.href, files: [file] };
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            try {
-                await navigator.share(shareData);
-            } catch (err) {
-                console.log('Share action canceled or failed', err);
-            }
+            try { await navigator.share(shareData); } catch (err) { console.log(err); }
         } else if (navigator.share) {
-            try {
-                await navigator.share({ title: art.title, text: art.snippet, url: window.location.href });
-            } catch (err) {
-                console.log('Share action canceled', err);
-            }
+            try { await navigator.share({ title: art.title, text: art.snippet, url: window.location.href }); } catch (err) { console.log(err); }
         } else {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1413,16 +1402,13 @@ function openArticle(id) {
     const list = getArticles();
     const art = list.find(a => a.id === id);
     if (!art) return;
-
     let postTime = timeAgo(art.createdAt);
-
     document.getElementById('reader-body').innerHTML = `
         <span class="meta-tag">${escapeHTML(art.category)} • ${postTime}</span>
         <h1 style="font-size: 24px; font-weight: 800; line-height: 1.2; margin-bottom: 12px;">${escapeHTML(art.title)}</h1>
-        ${art.imageUrl ? `<img src="${escapeHTML(art.imageUrl)}" style="width:100%; border-radius:8px; margin-bottom:12px;">` : ''}
-        <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;">${art.content}</div>
+        ${art.imageUrl ? `<img src="${escapeHTML(art.imageUrl)}" style="width:100%; border-radius:8px; margin-bottom:12px;" onerror="this.style.display='none'">` : ''}
+        <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;">${escapeHTML(art.content).replace(/\n/g, '<br>')}</div>
     `;
-
     renderComments(art);
     document.getElementById('reader-modal').style.display = 'block';
     document.body.style.overflow = 'hidden';
@@ -1441,49 +1427,40 @@ function closeArticleReader() {
 function renderComments(art) {
     const container = document.getElementById('comments-list');
     container.innerHTML = '';
-    
     let totalCount = art.comments && Array.isArray(art.comments) ? art.comments.reduce((acc, c) => acc + 1 + (c.replies ? c.replies.length : 0), 0) : 0;
     document.getElementById('comments-count-title').innerText = `Comments (${totalCount})`;
-
     if (!art.comments || art.comments.length === 0) {
         container.innerHTML = '<div style="text-align:center; font-size: 13px; color: var(--text-secondary); padding: 24px;">No comments yet. Be the first to share your thoughts!</div>';
         return;
     }
-
     art.comments.forEach(c => {
         let avatarUrl = c.avatar || userAvatarsMap[c.user] || '';
         let avatarStyle = avatarUrl ? `background-image: url('${escapeHTML(avatarUrl)}');` : '';
         let avatarText = avatarUrl ? '' : (c.user ? escapeHTML(c.user.charAt(0).toUpperCase()) : 'U');
-
         let imgHtml = c.image ? `<img src="${escapeHTML(c.image)}" class="tiktok-img">` : '';
         let isLikedClass = c.liked ? 'liked' : '';
         let commentLikes = c.likes || 0;
         let canDelete = currentUsername === 'Admin' || currentUsername === c.user;
         let commentTime = timeAgo(c.createdAt);
         let safeUser = escapeHTML(c.user);
-
         let repliesHtml = '';
         if (c.replies && c.replies.length > 0) {
             c.replies.forEach(r => {
                 let rAvatarUrl = r.avatar || userAvatarsMap[r.user] || '';
                 let rAvatarStyle = rAvatarUrl ? `background-image: url('${escapeHTML(rAvatarUrl)}'); width:28px; height:28px; font-size:11px;` : `width:28px; height:28px; font-size:11px;`;
                 let rAvatarText = rAvatarUrl ? '' : (r.user ? escapeHTML(r.user.charAt(0).toUpperCase()) : 'U');
-
                 let rLikedClass = r.liked ? 'liked' : '';
                 let rLikes = r.likes || 0;
                 let canDeleteReply = currentUsername === 'Admin' || currentUsername === r.user;
                 let replyTime = timeAgo(r.createdAt);
                 let safeReplyUser = escapeHTML(r.user);
-
                 repliesHtml += `
                     <div class="tiktok-comment-item" style="padding-top: 8px;">
                         <div class="tiktok-avatar" style="${rAvatarStyle}" onclick="event.stopPropagation(); openUserProfile('${safeReplyUser}', true)">${rAvatarText}</div>
                         <div class="tiktok-comment-body">
                             <div class="tiktok-username" onclick="event.stopPropagation(); openUserProfile('${safeReplyUser}', true)">${safeReplyUser} ${canDeleteReply ? `<span class="delete-action-text" onclick="event.stopPropagation(); deleteReply('${escapeHTML(art.id)}', '${escapeHTML(c.id)}', '${escapeHTML(r.id)}')">· Delete</span>` : ''}</div>
                             <div class="tiktok-text">${escapeHTML(r.text)}</div>
-                            <div class="tiktok-meta-row">
-                                <span>${replyTime}</span>
-                            </div>
+                            <div class="tiktok-meta-row"><span>${replyTime}</span></div>
                         </div>
                         <button class="tiktok-like-box ${rLikedClass}" onclick="toggleReplyLike('${escapeHTML(art.id)}', '${escapeHTML(c.id)}', '${escapeHTML(r.id)}')">
                             <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
@@ -1493,7 +1470,6 @@ function renderComments(art) {
                 `;
             });
         }
-
         container.innerHTML += `
             <div class="tiktok-comment-item">
                 <div class="tiktok-avatar" style="${avatarStyle}" onclick="event.stopPropagation(); openUserProfile('${safeUser}', true)">${avatarText}</div>
@@ -1528,13 +1504,10 @@ function submitMainComment() {
     const input = document.getElementById('comment-input');
     const text = input.value.trim();
     if (!text && !commentImageUrl) return;
-
     const list = getArticles();
     const art = list.find(a => a.id === activeArticleId);
     if (!art) return;
-
     if (!art.comments) art.comments = [];
-
     if (replyingToCommentId) {
         const comment = art.comments.find(c => c.id === replyingToCommentId);
         if (comment) {
@@ -1566,7 +1539,6 @@ function submitMainComment() {
         });
         addNotification(`New comment on your story "${art.title}"`);
     }
-
     input.value = '';
     clearCommentImage();
     saveArticles(list);
@@ -1594,7 +1566,6 @@ function openUserProfile(username, fromReader = false) {
     } else {
         document.getElementById('up-back-btn').innerText = '← Back';
     }
-
     document.getElementById('up-username').innerText = username;
     const upAvatarEl = document.getElementById('up-avatar');
     let uAvatar = userAvatarsMap[username] || '';
@@ -1605,20 +1576,15 @@ function openUserProfile(username, fromReader = false) {
         upAvatarEl.style.backgroundImage = 'none';
         upAvatarEl.innerText = username.charAt(0).toUpperCase();
     }
-    
     const list = getArticles();
     const userPosts = list.filter(a => a.author === username);
     const area = document.getElementById('up-posts-area');
     area.innerHTML = '';
-
     if (userPosts.length === 0) {
         area.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">This user hasn\'t published any posts yet.</div>';
     } else {
-        userPosts.forEach(art => {
-            area.innerHTML += buildCardHTML(art);
-        });
+        userPosts.forEach(art => { area.innerHTML += buildCardHTML(art); });
     }
-
     document.getElementById('user-profile-modal').style.display = 'block';
     document.body.style.overflow = 'hidden';
 }
@@ -1683,48 +1649,96 @@ function closePublisher() {
     document.body.style.overflow = '';
 }
 
+/* FIXED PUBLISH — never waits on hanging cloud upload */
 async function saveNewArticle() {
-    const title = document.getElementById('p-title').value.trim();
-    const artist = document.getElementById('p-artist').value.trim();
-    const category = document.getElementById('p-category').value;
-    const snippet = document.getElementById('p-snippet').value.trim();
-    const content = document.getElementById('p-content').value.trim();
-    const fileInput = document.getElementById('p-file');
+    const publishBtn = document.getElementById('publishBtn');
+    try {
+        const titleEl = document.getElementById('p-title');
+        const artistEl = document.getElementById('p-artist');
+        const categoryEl = document.getElementById('p-category');
+        const snippetEl = document.getElementById('p-snippet');
+        const contentEl = document.getElementById('p-content');
+        const fileEl = document.getElementById('p-file');
 
-    if (!title || !snippet || !content) {
-        alert('Please fill out the headline, snippet, and content fields.');
-        return;
-    }
+        if (!titleEl || !snippetEl || !contentEl) {
+            alert('Form elements missing. Please refresh the page.');
+            return;
+        }
 
-    // Ensure image upload finishes if a file was selected but handlePublisherImageUpload hasn't completed yet
-    if (fileInput && fileInput.files && fileInput.files[0]) {
-        if (!publisherImageUrl) {
-            publisherImageUrl = await uploadFileToCloudStorage(fileInput.files[0], 'banners');
+        const title = titleEl.value.trim();
+        const artist = artistEl ? artistEl.value.trim() : '';
+        const category = categoryEl ? categoryEl.value : 'Celeb Gossip';
+        const snippet = snippetEl.value.trim();
+        const content = contentEl.value.trim();
+
+        if (!title || !snippet || !content) {
+            alert('Please fill out the Headline, Snippet, and Full Story Content fields.');
+            return;
+        }
+
+        if (publishBtn) {
+            publishBtn.disabled = true;
+            publishBtn.textContent = 'Publishing…';
+        }
+
+        let finalImageUrl = publisherImageUrl || '';
+        const selectedFile = fileEl && fileEl.files && fileEl.files[0] ? fileEl.files[0] : null;
+
+        // Fast local read only — no cloud wait
+        if (selectedFile && !finalImageUrl) {
+            setPublisherImageStatus('Preparing image…');
+            try {
+                finalImageUrl = await withTimeout(fileToDataURL(selectedFile), 10000, 'Image read');
+                publisherImageUrl = finalImageUrl;
+            } catch (e) {
+                console.warn(e);
+                finalImageUrl = '';
+            }
+        }
+
+        const list = getArticles();
+        const newArt = {
+            id: 'art-' + Date.now(),
+            title: title,
+            artist: artist || 'General',
+            category: category,
+            imageUrl: finalImageUrl || '',
+            snippet: snippet,
+            content: content,
+            author: currentUsername || 'Guest User',
+            createdAt: Date.now(),
+            likes: 0,
+            comments: []
+        };
+
+        list.unshift(newArt);
+        saveArticles(list);
+
+        titleEl.value = '';
+        if (artistEl) artistEl.value = '';
+        if (categoryEl) categoryEl.selectedIndex = 0;
+        snippetEl.value = '';
+        contentEl.value = '';
+        if (fileEl) fileEl.value = '';
+        publisherImageUrl = '';
+        publisherImageUploading = false;
+        setPublisherImageStatus('');
+        showPublisherPreview('');
+
+        document.getElementById('publisher-modal').style.display = 'none';
+        document.body.style.overflow = '';
+        switchTab('feed');
+
+        alert(finalImageUrl ? 'Story published successfully with image!' : 'Story published successfully!');
+    } catch (err) {
+        console.error('Publish error:', err);
+        alert('Failed to publish story: ' + (err.message || String(err)));
+    } finally {
+        if (publishBtn) {
+            publishBtn.disabled = false;
+            publishBtn.textContent = 'Publish Story';
         }
     }
-
-    const list = getArticles();
-    const newArt = {
-        id: 'art-' + Date.now(),
-        title: title,
-        artist: artist || 'General',
-        category: category,
-        imageUrl: publisherImageUrl,
-        snippet: snippet,
-        content: content,
-        author: currentUsername,
-        createdAt: Date.now(),
-        likes: 0,
-        comments: []
-    };
-
-    list.unshift(newArt);
-    saveArticles(list);
-    publisherImageUrl = '';
-    if (fileInput) fileInput.value = '';
-    document.getElementById('publisher-modal').style.display = 'none';
-    document.body.style.overflow = '';
-    switchTab('feed');
 }
 
 function switchProfileTab(tab, el) {
@@ -1738,24 +1752,19 @@ function renderProfileContent() {
     const area = document.getElementById('profile-content-area');
     area.innerHTML = '';
     const list = getArticles();
-
     if (activeProfileTab === 'published') {
         const userPosts = list.filter(a => a.author === currentUsername);
         if (userPosts.length === 0) {
             area.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">You haven\'t published any stories yet.</div>';
         } else {
-            userPosts.forEach(art => {
-                area.innerHTML += buildCardHTML(art);
-            });
+            userPosts.forEach(art => { area.innerHTML += buildCardHTML(art); });
         }
     } else if (activeProfileTab === 'bookmarks') {
         const savedPosts = list.filter(a => bookmarks.includes(a.id));
         if (savedPosts.length === 0) {
             area.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">No bookmarked articles saved yet.</div>';
         } else {
-            savedPosts.forEach(art => {
-                area.innerHTML += buildCardHTML(art);
-            });
+            savedPosts.forEach(art => { area.innerHTML += buildCardHTML(art); });
         }
     }
 }
@@ -1770,7 +1779,6 @@ function addNotification(msg) {
     const badge = document.getElementById('notif-badge');
     badge.innerText = notifications.length;
     badge.style.display = 'inline-block';
-
     const list = document.getElementById('notif-list');
     list.innerHTML = '';
     notifications.forEach(n => {
