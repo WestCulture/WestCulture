@@ -1143,8 +1143,23 @@ async function loadArticlesFromCloud() {
                     likes: row.likes || 0,
                     comments: row.comments || []
                 }));
-            } else if (!data || data.length === 0) {
-                // If table is empty, push default articles to Supabase
+            } else if (!error && (!data || data.length === 0)) {
+                // If the database table is empty, seed it with default articles
+                for (let art of defaultArticles) {
+                    await supabaseClient.from('westpulse_posts').insert([{
+                        id: art.id,
+                        title: art.title,
+                        artist: art.artist,
+                        category: art.category,
+                        image_url: art.imageUrl,
+                        snippet: art.snippet,
+                        content: art.content,
+                        author: art.author,
+                        created_at: new Date(art.createdAt).toISOString(),
+                        likes: art.likes,
+                        comments: art.comments
+                    }]).select();
+                }
                 cachedArticles = defaultArticles;
             }
         } catch (err) {
@@ -1205,7 +1220,6 @@ async function toggleLike(id, event) {
         addNotification(`Your story "${art.title}" received a new like!`);
     }
     
-    // Update cloud DB
     if (supabaseClient) {
         await supabaseClient.from('westpulse_posts').update({ likes: art.likes }).eq('id', id);
     }
@@ -1801,32 +1815,43 @@ async function saveNewArticle() {
             }
         }
 
+        const nowIso = new Date().toISOString();
         const newArt = {
             id: 'art-' + Date.now(),
             title: title,
             artist: artist || 'General',
             category: category,
-            imageUrl: finalImageUrl || '',
+            image_url: finalImageUrl || '',
             snippet: snippet,
             content: content,
             author: currentUsername || 'Guest User',
-            created_at: new Date().toISOString(),
+            created_at: nowIso,
             likes: 0,
             comments: []
         };
 
-        // Save to Supabase Cloud Database instantly so it appears globally
+        // Save directly to Supabase table
         if (supabaseClient) {
             const { error } = await supabaseClient.from('westpulse_posts').insert([newArt]);
             if (error) {
                 console.warn('Cloud insert error:', error.message);
+                alert('Cloud sync warning: ' + error.message);
             }
         }
 
         const list = getArticles();
         list.unshift({
-            ...newArt,
-            createdAt: Date.now()
+            id: newArt.id,
+            title: newArt.title,
+            artist: newArt.artist,
+            category: newArt.category,
+            imageUrl: newArt.image_url,
+            snippet: newArt.snippet,
+            content: newArt.content,
+            author: newArt.author,
+            createdAt: new Date(nowIso).getTime(),
+            likes: 0,
+            comments: []
         });
         saveArticlesToCloud(list);
 
