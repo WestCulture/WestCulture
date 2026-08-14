@@ -792,6 +792,7 @@ let defaultArticles = [
         snippet: 'Ticket sales hit unprecedented numbers across international box offices, setting a brand new milestone.',
         content: 'Burna Boy continues his massive worldwide tour run, setting extraordinary standards.',
         author: 'Admin',
+        authorId: '',
         createdAt: Date.now() - 86400000,
         likes: 42,
         comments: [
@@ -808,6 +809,7 @@ let currentUsername = 'Guest User';
 let currentUserBio = 'WestPulse Elite Contributor';
 let currentUserAvatar = '';
 let currentUserEmail = '';
+let currentUserId = ''; // Firebase UID — key for cross-device sync
 let publisherImageUrl = '';
 let publisherImageUploading = false;
 let commentImageUrl = '';
@@ -821,6 +823,8 @@ let activeProfileTab = 'published';
 let cameFromArticleReader = false; 
 let wasSidebarOpenBeforeSettings = false; 
 let userAvatarsMap = {};
+let articlesCache = null;
+let articlesSyncInProgress = false;
 
 const infoContent = {
     terms: `<h2 style="color: var(--accent-gold); font-size: 22px; margin-bottom: 16px;">Terms of Service</h2><p>Welcome to WestPulse. By accessing or using our platform, you agree to be bound by these Terms of Service. Please read them carefully.</p>`,
@@ -893,14 +897,216 @@ function toggleSidebar() {
     ov.style.display = isOpen ? 'none' : 'block';
 }
 
+/* ========== CLOUD DATA LAYER (Supabase + localStorage cache) ========== */
+
+function mapRowToArticle(row) {
+    if (!row) return null;
+    return {
+        id: row.id,
+        title: row.title || '',
+        artist: row.artist || '',
+        category: row.category || '',
+        imageUrl: row.image_url || '',
+        snippet: row.snippet || '',
+        content: row.content || '',
+        author: row.author || 'Guest User',
+        authorId: row.author_id || '',
+        createdAt: row.created_at || Date.now(),
+        likes: row.likes || 0,
+        comments: Array.isArray(row.comments) ? row.comments : (row.comments || [])
+    };
+}
+
+function mapArticleToRow(art) {
+    return {
+        id: art.id,
+        title: art.title || '',
+        artist: art.artist || '',
+        category: art.category || '',
+        image_url: art.imageUrl || '',
+        snippet: art.snippet || '',
+        content: art.content || '',
+        author: art.author || 'Guest User',
+        author_id: art.authorId || '',
+        created_at: art.createdAt || Date.now(),
+        likes: art.likes || 0,
+        comments: art.comments || []
+    };
+}
+
+function getLocalArticles() {
+    let stored = localStorage.getItem('westpulse_articles_gold_v2');
+    let articles = [];
+    if (!stored) {
+        articles = JSON.parse(JSON.stringify(defaultArticles));
+    } else {
+        try {
+            articles = JSON.parse(stored);
+        } catch (e) {
+            articles = JSON.parse(JSON.stringify(defaultArticles));
+        }
+    }
+    articles = articles.filter(a => {
+        if (!a) return false;
+        const titleStr = String(a.title || '').trim().toLowerCase();
+        if (titleStr === 'undefined' || !titleStr) return false;
+        return true;
+    });
+    return articles;
+}
+
+function setLocalArticles(list) {
+    const cleanList = list.filter(a => {
+        if (!a) return false;
+        const titleStr = String(a.title || '').trim().toLowerCase();
+        return titleStr !== 'undefined' && titleStr !== '';
+    });
+    try {
+        localStorage.setItem('westpulse_articles_gold_v2', JSON.stringify(cleanList));
+    } catch (e) {
+        console.warn('localStorage full or blocked', e);
+    }
+    articlesCache = cleanList;
+}
+
+function getArticles() {
+    if (articlesCache) return articlesCache;
+    articlesCache = getLocalArticles();
+    return articlesCache;
+}
+
+async function fetchArticlesFromCloud() {
+    if (!supabaseClient) return null;
+    try {
+        const { data, error } = await supabaseClient
+            .from('articles')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
+        if (!data || !data.length) return [];
+        return data.map(mapRowToArticle).filter(Boolean);
+    } catch (e) {
+        console.warn('Cloud articles fetch failed (tables may not exist yet):', e.message || e);
+        return null;
+    }
+}
+
+async function upsertArticleToCloud(art) {
+    if (!supabaseClient || !art) return false;
+    try {
+        const row = mapArticleToRow(art);
+        const { error } = await supabaseClient.from('articles').upsert(row, { onConflict: 'id' });
+        if (error) throw error;
+        return true;
+    } catch (e) {
+        console.warn('Cloud article upsert failed:', e.message || e);
+        return false;
+    }
+}
+
+async function deleteArticleFromCloud(id) {
+    if (!supabaseClient || !id) return false;
+    try {
+        const { error } = await supabaseClient.from('articles').delete().eq('id', id);
+        if (error) throw error;
+        return true;
+    } catch (e) {
+        console.warn('Cloud article delete failed:', e.message || e);
+        return false;
+    }
+}
+
+async function saveArticles(list) {
+    setLocalArticles(list);
+    renderFeed();
+    renderSearchFeed();
+    updateLeaderboard();
+    // Sync each article to cloud (best-effort)
+    if (supabaseClient) {
+        for (const art of list) {
+            await upsertArticleToCloud(art);
+        }
+    }
+}
+
+async function loadArticlesFromCloudOrLocal() {
+    if (articlesSyncInProgress) return getArticles();
+    articlesSyncInProgress = true;
+    try {
+        const cloud = await fetchArticlesFromCloud();
+        if (cloud && cloud.length) {
+            // Merge: prefer cloud, keep any local-only not yet uploaded
+            const local = getLocalArticles();
+            const byId = {};
+            cloud.forEach(a => { byId[a.id] = a; });
+            local.forEach(a => {
+                if (!byId[a.id]) byId[a.id] = a;
+            });
+            const merged = Object.values(byId).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            setLocalArticles(merged);
+            // Upload any local-only
+            for (const a of local) {
+                if (!cloud.find(c => c.id === a.id)) {
+                    await upsertArticleToCloud(a);
+                }
+            }
+            return merged;
+        }
+        // Cloud empty or unavailable — seed default + upload if possible
+        const local = getLocalArticles();
+        setLocalArticles(local);
+        if (supabaseClient && local.length) {
+            for (const a of local) await upsertArticleToCloud(a);
+        }
+        return local;
+    } finally {
+        articlesSyncInProgress = false;
+    }
+}
+
+async function loadProfileFromCloud(uid) {
+    if (!supabaseClient || !uid) return null;
+    try {
+        const { data, error } = await supabaseClient
+            .from('profiles')
+            .select('*')
+            .eq('id', uid)
+            .maybeSingle();
+        if (error) throw error;
+        return data;
+    } catch (e) {
+        console.warn('Cloud profile fetch failed:', e.message || e);
+        return null;
+    }
+}
+
+async function saveProfileToCloud() {
+    if (!supabaseClient || !currentUserId) return false;
+    try {
+        const { error } = await supabaseClient.from('profiles').upsert({
+            id: currentUserId,
+            username: currentUsername,
+            bio: currentUserBio,
+            avatar_url: currentUserAvatar || '',
+            updated_at: new Date().toISOString()
+        }, { onConflict: 'id' });
+        if (error) throw error;
+        return true;
+    } catch (e) {
+        console.warn('Cloud profile save failed:', e.message || e);
+        return false;
+    }
+}
+
 /* ========== FIXED AUTH ========== */
-function applyUser(user) {
+async function applyUser(user) {
     const authBtn = document.getElementById('auth-btn');
     if (!user) {
         currentUsername = 'Guest User';
         currentUserAvatar = '';
         currentUserEmail = '';
         currentUserBio = 'WestPulse Elite Contributor';
+        currentUserId = '';
         if (authBtn) {
             authBtn.innerText = 'Sign In';
             authBtn.onclick = handleGoogleSignIn;
@@ -912,16 +1118,33 @@ function applyUser(user) {
         return;
     }
 
+    currentUserId = user.uid || '';
     currentUsername = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
     currentUserAvatar = user.photoURL || '';
     currentUserEmail = user.email || '';
-    userAvatarsMap[currentUsername] = currentUserAvatar;
+    currentUserBio = 'WestPulse Elite Contributor';
 
-    // Restore custom bio if saved for this user
-    try {
-        const savedBio = localStorage.getItem('westpulse_bio_' + currentUsername);
-        if (savedBio) currentUserBio = savedBio;
-    } catch (e) {}
+    // Load cloud profile first (cross-device), then local fallback
+    const cloudProfile = await loadProfileFromCloud(currentUserId);
+    if (cloudProfile) {
+        if (cloudProfile.username) currentUsername = cloudProfile.username;
+        if (cloudProfile.bio) currentUserBio = cloudProfile.bio;
+        if (cloudProfile.avatar_url) currentUserAvatar = cloudProfile.avatar_url;
+    } else {
+        try {
+            const savedBio = localStorage.getItem('westpulse_bio_' + currentUserId) ||
+                             localStorage.getItem('westpulse_bio_' + currentUsername);
+            if (savedBio) currentUserBio = savedBio;
+            const savedName = localStorage.getItem('westpulse_name_' + currentUserId);
+            if (savedName) currentUsername = savedName;
+            const savedAvatar = localStorage.getItem('westpulse_avatar_' + currentUserId);
+            if (savedAvatar) currentUserAvatar = savedAvatar;
+        } catch (e) {}
+        // Create profile in cloud so other devices can see it
+        await saveProfileToCloud();
+    }
+
+    userAvatarsMap[currentUsername] = currentUserAvatar;
 
     if (authBtn) {
         const shortName = currentUsername.split(' ')[0] || currentUsername;
@@ -935,7 +1158,6 @@ function applyUser(user) {
     updateProfileDisplay();
     loadUserData();
 
-    // Refresh profile tab content if currently open
     if (document.getElementById('profile-view') && document.getElementById('profile-view').classList.contains('active')) {
         renderProfileContent();
     }
@@ -949,7 +1171,6 @@ function handleGoogleSignIn() {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
 
-    // Prefer popup (works better on most single-page sites)
     firebaseAuth.signInWithPopup(provider)
         .then((result) => {
             if (result && result.user) {
@@ -958,13 +1179,12 @@ function handleGoogleSignIn() {
         })
         .catch((err) => {
             console.error('Popup sign-in error:', err);
-            // Fallback to redirect if popup is blocked
             if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
                 firebaseAuth.signInWithRedirect(provider).catch(e => {
                     alert('Sign-in failed: ' + (e.message || e));
                 });
             } else if (err.code === 'auth/popup-closed-by-user') {
-                // user closed popup — ignore
+                // ignore
             } else {
                 alert('Sign-in failed: ' + (err.message || err.code || err));
             }
@@ -985,13 +1205,11 @@ function handleSignOut() {
         });
 }
 
-// Listen for auth state on every page load (this is the key fix)
 if (firebaseAuth) {
     firebaseAuth.onAuthStateChanged((user) => {
         applyUser(user || null);
     });
 
-    // Still handle redirect result (for fallback path)
     firebaseAuth.getRedirectResult()
         .then((result) => {
             if (result && result.user) {
@@ -1081,7 +1299,6 @@ async function handleEditAvatarUpload(input) {
     if (!file) return;
     try {
         editAvatarUrl = await fileToDataURL(file);
-        // optional cloud upgrade
         uploadFileToCloudStorage(file, 'avatars').then((url) => {
             if (url && !url.startsWith('data:')) editAvatarUrl = url;
         }).catch(() => {});
@@ -1103,21 +1320,32 @@ function closeEditProfileModal() {
     document.body.style.overflow = '';
 }
 
-function saveProfileChanges() {
+async function saveProfileChanges() {
+    if (!currentUserId) {
+        alert('Please sign in first so your profile can sync across devices.');
+        return;
+    }
     const newName = document.getElementById('edit-name-input').value.trim();
     const newBio = document.getElementById('edit-bio-input').value.trim();
     if (newName) currentUsername = newName;
-    if (newBio) {
-        currentUserBio = newBio;
-        try {
-            localStorage.setItem('westpulse_bio_' + currentUsername, currentUserBio);
-        } catch (e) {}
-    }
+    if (newBio) currentUserBio = newBio;
     if (editAvatarUrl) currentUserAvatar = editAvatarUrl;
+
     userAvatarsMap[currentUsername] = currentUserAvatar;
+
+    // Local backup keyed by UID
+    try {
+        localStorage.setItem('westpulse_bio_' + currentUserId, currentUserBio);
+        localStorage.setItem('westpulse_name_' + currentUserId, currentUsername);
+        localStorage.setItem('westpulse_avatar_' + currentUserId, currentUserAvatar || '');
+    } catch (e) {}
+
+    const ok = await saveProfileToCloud();
     updateProfileDisplay();
     closeEditProfileModal();
-    alert('Profile updated successfully!');
+    alert(ok
+        ? 'Profile updated and synced to the cloud!'
+        : 'Profile saved on this device. Cloud sync failed — create the profiles table in Supabase (see instructions).');
 }
 
 async function handleCommentImageUpload(input) {
@@ -1139,59 +1367,18 @@ function clearCommentImage() {
     document.getElementById('comment-img-preview-container').style.display = 'none';
 }
 
-function getArticles() {
-    let stored = localStorage.getItem('westpulse_articles_gold_v2');
-    let articles = [];
-    if (!stored) {
-        articles = defaultArticles;
-    } else {
-        try {
-            articles = JSON.parse(stored);
-        } catch (e) {
-            articles = defaultArticles;
-        }
-    }
-    articles = articles.filter(a => {
-        if (!a) return false;
-        const titleStr = String(a.title || '').trim().toLowerCase();
-        const snippetStr = String(a.snippet || '').trim().toLowerCase();
-        const contentStr = String(a.content || '').trim().toLowerCase();
-        if (titleStr === 'undefined' || !titleStr) return false;
-        if (snippetStr === 'undefined') return false;
-        if (contentStr === 'undefined') return false;
-        return true;
-    });
-    localStorage.setItem('westpulse_articles_gold_v2', JSON.stringify(articles));
-    return articles;
-}
-
-function saveArticles(list) {
-    const cleanList = list.filter(a => {
-        if (!a) return false;
-        const titleStr = String(a.title || '').trim().toLowerCase();
-        return titleStr !== 'undefined' && titleStr !== '';
-    });
-    try {
-        localStorage.setItem('westpulse_articles_gold_v2', JSON.stringify(cleanList));
-    } catch (e) {
-        console.warn('localStorage full or blocked', e);
-        alert('Storage is full. Try a smaller image or delete old posts.');
-    }
-    renderFeed();
-    renderSearchFeed();
-    updateLeaderboard();
-}
-
 function loadUserData() {
-    let bStored = localStorage.getItem('westpulse_bookmarks_' + currentUsername);
+    const key = currentUserId || currentUsername;
+    let bStored = localStorage.getItem('westpulse_bookmarks_' + key);
     bookmarks = bStored ? JSON.parse(bStored) : [];
-    let lStored = localStorage.getItem('westpulse_likes_' + currentUsername);
+    let lStored = localStorage.getItem('westpulse_likes_' + key);
     likedArticles = lStored ? JSON.parse(lStored) : [];
 }
 
 function saveUserData() {
-    localStorage.setItem('westpulse_bookmarks_' + currentUsername, JSON.stringify(bookmarks));
-    localStorage.setItem('westpulse_likes_' + currentUsername, JSON.stringify(likedArticles));
+    const key = currentUserId || currentUsername;
+    localStorage.setItem('westpulse_bookmarks_' + key, JSON.stringify(bookmarks));
+    localStorage.setItem('westpulse_likes_' + key, JSON.stringify(likedArticles));
 }
 
 function toggleBookmark(id, event) {
@@ -1204,7 +1391,7 @@ function toggleBookmark(id, event) {
     renderSearchFeed();
 }
 
-function toggleLike(id, event) {
+async function toggleLike(id, event) {
     if (event) event.stopPropagation();
     const list = getArticles();
     const art = list.find(a => a.id === id);
@@ -1218,7 +1405,7 @@ function toggleLike(id, event) {
         art.likes = (art.likes || 0) + 1;
         addNotification(`Your story "${art.title}" received a new like!`);
     }
-    saveArticles(list);
+    await saveArticles(list);
     saveUserData();
 }
 
@@ -1485,12 +1672,13 @@ async function shareArticle(id, event) {
     });
 }
 
-function deleteArticle(id, event) {
+async function deleteArticle(id, event) {
     if (event) event.stopPropagation();
     if (!confirm("Are you sure you want to delete this story?")) return;
     let list = getArticles();
     list = list.filter(a => a.id !== id);
-    saveArticles(list);
+    await saveArticles(list);
+    await deleteArticleFromCloud(id);
     if (activeArticleId === id) closeArticleReader();
 }
 
@@ -1597,7 +1785,7 @@ function setReplyTarget(commentId, username) {
     input.focus();
 }
 
-function submitMainComment() {
+async function submitMainComment() {
     const input = document.getElementById('comment-input');
     const text = input.value.trim();
     if (!text && !commentImageUrl) return;
@@ -1638,18 +1826,18 @@ function submitMainComment() {
     }
     input.value = '';
     clearCommentImage();
-    saveArticles(list);
+    await saveArticles(list);
     renderComments(art);
 }
 
-function deleteReply(articleId, commentId, replyId) {
+async function deleteReply(articleId, commentId, replyId) {
     const list = getArticles();
     const art = list.find(a => a.id === articleId);
     if (art) {
         const comment = art.comments.find(c => c.id === commentId);
         if (comment && comment.replies) {
             comment.replies = comment.replies.filter(r => r.id !== replyId);
-            saveArticles(list);
+            await saveArticles(list);
             renderComments(art);
         }
     }
@@ -1695,7 +1883,7 @@ function closeUserProfileModal() {
     }
 }
 
-function toggleCommentLike(articleId, commentId) {
+async function toggleCommentLike(articleId, commentId) {
     const list = getArticles();
     const art = list.find(a => a.id === articleId);
     if (art) {
@@ -1703,13 +1891,13 @@ function toggleCommentLike(articleId, commentId) {
         if (comment) {
             comment.liked = !comment.liked;
             comment.likes = (comment.likes || 0) + (comment.liked ? 1 : -1);
-            saveArticles(list);
+            await saveArticles(list);
             renderComments(art);
         }
     }
 }
 
-function toggleReplyLike(articleId, commentId, replyId) {
+async function toggleReplyLike(articleId, commentId, replyId) {
     const list = getArticles();
     const art = list.find(a => a.id === articleId);
     if (art) {
@@ -1719,19 +1907,19 @@ function toggleReplyLike(articleId, commentId, replyId) {
             if (reply) {
                 reply.liked = !reply.liked;
                 reply.likes = (reply.likes || 0) + (reply.liked ? 1 : -1);
-                saveArticles(list);
+                await saveArticles(list);
                 renderComments(art);
             }
         }
     }
 }
 
-function deleteComment(articleId, commentId) {
+async function deleteComment(articleId, commentId) {
     const list = getArticles();
     const art = list.find(a => a.id === articleId);
     if (art) {
         art.comments = art.comments.filter(c => c.id !== commentId);
-        saveArticles(list);
+        await saveArticles(list);
         renderComments(art);
     }
 }
@@ -1801,13 +1989,16 @@ async function saveNewArticle() {
             snippet: snippet,
             content: content,
             author: currentUsername || 'Guest User',
+            authorId: currentUserId || '',
             createdAt: Date.now(),
             likes: 0,
             comments: []
         };
 
         list.unshift(newArt);
-        saveArticles(list);
+        await saveArticles(list);
+        // Explicit single upsert for reliability
+        await upsertArticleToCloud(newArt);
 
         titleEl.value = '';
         if (artistEl) artistEl.value = '';
@@ -1824,7 +2015,7 @@ async function saveNewArticle() {
         document.body.style.overflow = '';
         switchTab('feed');
 
-        alert(finalImageUrl ? 'Story published successfully with image!' : 'Story published successfully!');
+        alert(finalImageUrl ? 'Story published and synced!' : 'Story published and synced!');
     } catch (err) {
         console.error('Publish error:', err);
         alert('Failed to publish story: ' + (err.message || String(err)));
@@ -1848,7 +2039,11 @@ function renderProfileContent() {
     area.innerHTML = '';
     const list = getArticles();
     if (activeProfileTab === 'published') {
-        const userPosts = list.filter(a => a.author === currentUsername);
+        // Match by author name OR authorId (UID) so renames still show posts
+        const userPosts = list.filter(a =>
+            a.author === currentUsername ||
+            (currentUserId && a.authorId === currentUserId)
+        );
         if (userPosts.length === 0) {
             area.innerHTML = '<div style="text-align: center; color: var(--text-secondary); font-size: 13px; padding: 20px;">You haven\'t published any stories yet.</div>';
         } else {
@@ -1881,7 +2076,8 @@ function addNotification(msg) {
     });
 }
 
-window.onload = function() {
+window.onload = async function() {
+    await loadArticlesFromCloudOrLocal();
     renderFeed();
     updateLeaderboard();
 };
